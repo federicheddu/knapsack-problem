@@ -27,7 +27,7 @@ def vector_to_nx(items: List[Item], capacity: int):
     for layer in range(len(items)):
         for nd in range(1, capacity+2):
             g.add_node(layer*(capacity+1)+nd, group=layer+2)
-    g.add_node(len(items)*(capacity+1)+2, group=len(items)+2)
+    g.add_node(len(items)*(capacity+1)+1, group=len(items)+1)
 
     # starting edges
     g.add_edge(0, 1, weight=0)
@@ -44,9 +44,10 @@ def vector_to_nx(items: List[Item], capacity: int):
 
     # ending edges
     for nd in range(1, capacity+2):
-        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+2, weight=0)
+        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0)
 
     return g
+
 
 def do_some_tests():
     sizes = [10, 50, 100, 500, 1000]
@@ -157,6 +158,40 @@ def check_solution(sel1, sel2):
     return same
 
 
+def topological_sort(g, v, visited, stack):
+    # mark the current node as visited
+    visited[v] = True
+
+    # recur for all adjacent vertices of v
+    for i in g.neighbors(v):
+        if visited[i] == False:
+            topological_sort(g, i, visited, stack)
+
+    stack.append(v)
+
+
+def shortest_path_dag(g: nx.DiGraph, s: int):
+    visited = [False] * g.number_of_nodes()
+    stack = []
+
+    for i in range(g.number_of_nodes()):
+        if not visited[i]:
+            topological_sort(g, s, visited, stack)
+
+    dist = [float('inf')] * g.number_of_nodes()
+    dist[s] = 0
+
+    while stack:
+        u = stack.pop()
+
+        # update distance for all adjacent nodes
+        for v in g.neighbors(u):
+            if dist[v] > dist[u] + g[u][v]['weight']:
+                dist[v] = dist[u] + g[u][v]['weight']
+
+    return dist
+
+
 if __name__ == '__main__':
     # generate random items
     #items = random_vector(1, 10, 4)
@@ -188,8 +223,11 @@ if __name__ == '__main__':
     #do_some_tests()
 
     g = vector_to_nx(items, capacity)
+    fobj_sp = shortest_path_dag(g, 0)
+    print(fobj_sp)
 
-    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True, layout=True)
+    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
+    gv.toggle_physics(False)
     gv.from_nx(g)
     gv.show('graph.html')
 
