@@ -2,7 +2,9 @@ import random
 import time
 from docplex.mp.model import Model
 from typing import List
-
+from collections import defaultdict
+from pyvis.network import Network
+import networkx as nx
 
 class Item:
     def __init__(self, value: int, weight: int):
@@ -15,6 +17,36 @@ class Item:
 def random_vector(min_value, max_value, size):
     return [Item(random.randint(min_value, max_value), random.randint(min_value, max_value)) for _ in range(size)]
 
+
+# from vector to graph
+def vector_to_nx(items: List[Item], capacity: int):
+    g = nx.DiGraph()
+
+    # add all nodes
+    g.add_node(0, group=1)
+    for layer in range(len(items)):
+        for nd in range(1, capacity+2):
+            g.add_node(layer*(capacity+1)+nd, group=layer+2)
+    g.add_node(len(items)*(capacity+1)+2, group=len(items)+2)
+
+    # starting edges
+    g.add_edge(0, 1, weight=0)
+    if items[0].weight <= capacity:
+        g.add_edge(0, items[0].weight+1, weight=-items[0].value)
+
+    # edges between items
+    # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
+    for layer in range(len(items)-1):
+        for nd in range(1, capacity+2):
+            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0)
+            if nd-1 + items[layer+1].weight <= capacity:
+                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer].value)
+
+    # ending edges
+    for nd in range(1, capacity+2):
+        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+2, weight=0)
+
+    return g
 
 def do_some_tests():
     sizes = [10, 50, 100, 500, 1000]
@@ -127,11 +159,12 @@ def check_solution(sel1, sel2):
 
 if __name__ == '__main__':
     # generate random items
-    items = random_vector(1, 10, 10)
+    #items = random_vector(1, 10, 4)
+    items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
     # sort items by ratio
-    items.sort(key=lambda x: x.ratio, reverse=True)
+    # items.sort(key=lambda x: x.ratio, reverse=True)
     # set max weight
-    capacity = 15
+    capacity = 6
 
     print('\nBranch and Bound with CPLEX')
     fobj_bb, sel_bb, rc_bb, time_bb = solve_with_knapsack_cplex(items, capacity)
@@ -151,5 +184,13 @@ if __name__ == '__main__':
 
     print('\n========================================\n')
 
-    print('\n\nDo some tests')
-    do_some_tests()
+    #print('\n\nDo some tests')
+    #do_some_tests()
+
+    g = vector_to_nx(items, capacity)
+
+    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True, layout=True)
+    gv.from_nx(g)
+    gv.show('graph.html')
+
+    #g.shortestPath(0)
