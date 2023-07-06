@@ -201,19 +201,21 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
             idx = pred
             path.append(idx)
             break
-
+        
+    #print(idx)
     while idx > 0:
         pred = list(g.predecessors(idx))
-        if pred[0] == 0 or dist[idx] == dist[pred[0]] or float('inf') == dist[pred[1]]:
+        #print(pred)
+        if pred[0] == 0 or dist[idx] == dist[pred[0]] + g[pred[0]][idx]['weight']:
             idx = pred[0]
         else:
             idx = pred[1]
+        #print(idx)
         path.append(idx)
     path.reverse()
 
     for nd in range(1,len(path)-1):
         if dist[path[nd]] != dist[path[nd-1]]:
-            print(f'node {path[nd]} is selected')
             sel[g.nodes[path[nd]]['group']-2] = 1
 
     return dist, path, sel
@@ -247,12 +249,22 @@ if __name__ == '__main__':
     #print('\n\nDo some tests')
     #do_some_tests()
 
+    print('Shortest Path')
     g = vector_to_nx(items, capacity)
     fobj_sp, path_sp, sel_sp = shortest_path_dag(g, 0)
-    print(f'items: {g.graph["items"]} capacity: {g.graph["capacity"]}')
+    print(f'Path: {path_sp}')
     print(fobj_sp)
-    print(path_sp)
-    print(sel_sp)
+    print(f'Profit: {-fobj_sp[len(fobj_sp)-1]}')
+    for i in range(len(sel_sp)):
+        if sel_sp[i] == 1:
+            print(f'x[{i}] = {sel_sp[i]}')
+    print(f'{path_sp[len(path_sp)-2]}: {fobj_sp[path_sp[len(path_sp)-2]]}')
+
+    print('\n========================================\n')
+
+    # check if the solutions are the same
+    same = check_solution(sel_bb, sel_sp)
+    print(f'Branch and Bound with CPLEX and Shortest Path give the same solution: {same} \n')
 
 
     gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
