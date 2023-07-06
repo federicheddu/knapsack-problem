@@ -213,15 +213,16 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
 
     for nd in range(1,len(path)-1):
         if dist[path[nd]] != dist[path[nd-1]]:
-            sel[(path[nd]-1)//(g.graph['capacity']+1)] = 1
+            print(f'node {path[nd]} is selected')
+            sel[g.nodes[path[nd]]['group']-2] = 1
 
     return dist, path, sel
 
 
 if __name__ == '__main__':
     # generate random items
-    #items = random_vector(1, 10, 10)
-    items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
+    items = random_vector(1, 10, 10)
+    #items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
     # set max weight
     capacity = 6
 
