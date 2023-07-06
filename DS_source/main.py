@@ -30,21 +30,21 @@ def vector_to_nx(items: List[Item], capacity: int):
     g.add_node(len(items)*(capacity+1)+1, group=len(items)+1, title=f'{len(items)*(capacity+1)+1}')
 
     # starting edges
-    g.add_edge(0, 1, weight=0)
+    g.add_edge(0, 1, weight=0, title='0')
     if items[0].weight <= capacity:
-        g.add_edge(0, items[0].weight+1, weight=-items[0].value)
+        g.add_edge(0, items[0].weight+1, weight=-items[0].value, title=f'{items[0].value}')
 
     # edges between items
     # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
     for layer in range(len(items)-1):
         for nd in range(1, capacity+2):
-            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0)
+            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0, title='0')
             if nd-1 + items[layer+1].weight <= capacity:
-                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer].value)
+                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer+1].value, title=f'{items[layer+1].value}')
 
     # ending edges
     for nd in range(1, capacity+2):
-        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0)
+        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
 
     return g
 
@@ -186,7 +186,7 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
 
         # update distance for all adjacent nodes
         for v in g.neighbors(u):
-            if dist[v] > dist[u] + g[u][v]['weight'] and v % (capacity + 1) != 0:
+            if dist[v] > dist[u] + g[u][v]['weight']:
                 dist[v] = dist[u] + g[u][v]['weight']
 
     return dist
