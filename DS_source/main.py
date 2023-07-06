@@ -20,14 +20,17 @@ def random_vector(min_value, max_value, size):
 
 # from vector to graph
 def vector_to_nx(items: List[Item], capacity: int):
-    g = nx.DiGraph()
+    g = nx.DiGraph(capacity=capacity, items=len(items))
+
+    x_offset = 100
+    y_offset = 40
 
     # add all nodes
-    g.add_node(0, group=1, title=f'0')
+    g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
     for layer in range(len(items)):
         for nd in range(1, capacity+2):
-            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}')
-    g.add_node(len(items)*(capacity+1)+1, group=len(items)+1, title=f'{len(items)*(capacity+1)+1}')
+            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}', x=x_offset*(layer+1), y=y_offset*(nd-1))
+    g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
 
     # starting edges
     g.add_edge(0, 1, weight=0, title='0')
@@ -173,6 +176,8 @@ def topological_sort(g, v, visited, stack):
 def shortest_path_dag(g: nx.DiGraph, s: int):
     visited = [False] * g.number_of_nodes()
     stack = []
+    path = []
+    sel = [0] * g.graph['items']
 
     for i in range(g.number_of_nodes()):
         if not visited[i]:
@@ -189,15 +194,34 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
             if dist[v] > dist[u] + g[u][v]['weight']:
                 dist[v] = dist[u] + g[u][v]['weight']
 
-    return dist
+    idx = g.number_of_nodes()-1
+    path.append(idx)
+    for pred in g.predecessors(idx):
+        if dist[pred] == dist[g.number_of_nodes()-1]:
+            idx = pred
+            path.append(idx)
+            break
+
+    while idx > 0:
+        pred = list(g.predecessors(idx))
+        if pred[0] == 0 or dist[idx] == dist[pred[0]] or float('inf') == dist[pred[1]]:
+            idx = pred[0]
+        else:
+            idx = pred[1]
+        path.append(idx)
+    path.reverse()
+
+    for nd in range(1,len(path)-1):
+        if dist[path[nd]] != dist[path[nd-1]]:
+            sel[(path[nd]-1)//(g.graph['capacity']+1)] = 1
+
+    return dist, path, sel
 
 
 if __name__ == '__main__':
     # generate random items
-    #items = random_vector(1, 10, 4)
+    #items = random_vector(1, 10, 10)
     items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
-    # sort items by ratio
-    # items.sort(key=lambda x: x.ratio, reverse=True)
     # set max weight
     capacity = 6
 
@@ -223,9 +247,11 @@ if __name__ == '__main__':
     #do_some_tests()
 
     g = vector_to_nx(items, capacity)
-    fobj_sp = shortest_path_dag(g, 0)
-    for idx in range(len(fobj_sp)):
-        print(f'fobj[{idx}] = {fobj_sp[idx]}')
+    fobj_sp, path_sp, sel_sp = shortest_path_dag(g, 0)
+    print(f'items: {g.graph["items"]} capacity: {g.graph["capacity"]}')
+    print(fobj_sp)
+    print(path_sp)
+    print(sel_sp)
 
 
     gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
