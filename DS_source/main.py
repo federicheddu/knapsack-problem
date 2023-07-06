@@ -23,11 +23,11 @@ def vector_to_nx(items: List[Item], capacity: int):
     g = nx.DiGraph()
 
     # add all nodes
-    g.add_node(0, group=1)
+    g.add_node(0, group=1, title=f'0')
     for layer in range(len(items)):
         for nd in range(1, capacity+2):
-            g.add_node(layer*(capacity+1)+nd, group=layer+2)
-    g.add_node(len(items)*(capacity+1)+1, group=len(items)+1)
+            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}')
+    g.add_node(len(items)*(capacity+1)+1, group=len(items)+1, title=f'{len(items)*(capacity+1)+1}')
 
     # starting edges
     g.add_edge(0, 1, weight=0)
@@ -186,7 +186,7 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
 
         # update distance for all adjacent nodes
         for v in g.neighbors(u):
-            if dist[v] > dist[u] + g[u][v]['weight']:
+            if dist[v] > dist[u] + g[u][v]['weight'] and v % (capacity + 1) != 0:
                 dist[v] = dist[u] + g[u][v]['weight']
 
     return dist
@@ -224,11 +224,11 @@ if __name__ == '__main__':
 
     g = vector_to_nx(items, capacity)
     fobj_sp = shortest_path_dag(g, 0)
-    print(fobj_sp)
+    for idx in range(len(fobj_sp)):
+        print(f'fobj[{idx}] = {fobj_sp[idx]}')
+
 
     gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
     gv.toggle_physics(False)
     gv.from_nx(g)
     gv.show('graph.html')
-
-    #g.shortestPath(0)
