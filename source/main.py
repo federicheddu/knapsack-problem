@@ -18,51 +18,24 @@ def random_vector(min_value, max_value, size):
     return [Item(random.randint(min_value, max_value), random.randint(min_value, max_value)) for _ in range(size)]
 
 
-# from vector to graph
-def vector_to_nx(items: List[Item], capacity: int):
-    g = nx.DiGraph(capacity=capacity, items=len(items))
-
-    x_offset = 100
-    y_offset = 40
-
-    # add all nodes
-    g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
-    for layer in range(len(items)):
-        for nd in range(1, capacity+2):
-            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}', x=x_offset*(layer+1), y=y_offset*(nd-1))
-    g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
-
-    # starting edges
-    g.add_edge(0, 1, weight=0, title='0')
-    if items[0].weight <= capacity:
-        g.add_edge(0, items[0].weight+1, weight=-items[0].value, title=f'{items[0].value}')
-
-    # edges between items
-    # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
-    for layer in range(len(items)-1):
-        for nd in range(1, capacity+2):
-            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0, title='0')
-            if nd-1 + items[layer+1].weight <= capacity:
-                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer+1].value, title=f'{items[layer+1].value}')
-
-    # ending edges
-    for nd in range(1, capacity+2):
-        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
-
-    return g
-
-
+# do some test with increasing number of items
 def do_some_tests():
+    capacity = random.randint(6, 20)
     sizes = [10, 50, 100, 500, 1000]
     for num in sizes:
         items = random_vector(1, 30, num)
         items.sort(key=lambda x: x.ratio, reverse=True)
-        capacity = 15
 
         fobj_bb, sel_bb, rc_bb, t_bb = solve_with_knapsack_cplex(items, capacity)
         fobj_pd, sel_pd, rc_pd, t_pd = solve_with_knapsack_dynamic(items, capacity)
+        fobj_sp, sel_sp, rc_sp, t_sp = solve_with_shortest_path_dag(items, capacity, False)
         same = check_solution(sel_bb, sel_pd)
-        print(f'\nNumber of items: {num} \n FObj BB: {fobj_bb}, Time BB: {t_bb} \n FObj PD: {fobj_pd}, Time PD: {t_pd} \n Same solution: {same}')
+        same = check_solution(sel_bb, sel_sp) and same
+        print(f'\nNumber of items: {num}')
+        print(f'FObj BB: {fobj_bb}, Time BB: {t_bb}')
+        print(f'FObj PD: {fobj_pd}, Time PD: {t_pd}')
+        print(f'FObj SP: {fobj_sp}, Time SP: {t_sp}')
+        print(f'Same solution: {same}')
 
 
 # print items
@@ -98,6 +71,7 @@ def knapsack_cplex(items: List[Item], capacity: int):
     return sol, model
 
 
+# solve knapsack problem using branch and bound of cplex
 def solve_with_knapsack_cplex(items: List[Item], capacity: int):
 
     # solve knapsack problem using cplex
@@ -112,6 +86,10 @@ def solve_with_knapsack_cplex(items: List[Item], capacity: int):
     for i in range(len(items)):
         if sel[i] == 1:
             rc -= items[i].weight
+
+    # cast to int
+    fobj = int(fobj)
+    sel = [int(x) for x in sel]
 
     return fobj, sel, rc, t
 
@@ -161,6 +139,41 @@ def check_solution(sel1, sel2):
     return same
 
 
+# from vector to networkx graph
+def vector_to_nx(items: List[Item], capacity: int):
+    g = nx.DiGraph(capacity=capacity, items=len(items))
+
+    x_offset = 100
+    y_offset = 40
+
+    # add all nodes
+    g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
+    for layer in range(len(items)):
+        for nd in range(1, capacity+2):
+            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}', x=x_offset*(layer+1), y=y_offset*(nd-1))
+    g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
+
+    # starting edges
+    g.add_edge(0, 1, weight=0, title='0')
+    if items[0].weight <= capacity:
+        g.add_edge(0, items[0].weight+1, weight=-items[0].value, title=f'{items[0].value}')
+
+    # edges between items
+    # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
+    for layer in range(len(items)-1):
+        for nd in range(1, capacity+2):
+            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0, title='0')
+            if nd-1 + items[layer+1].weight <= capacity:
+                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer+1].value, title=f'{items[layer+1].value}')
+
+    # ending edges
+    for nd in range(1, capacity+2):
+        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
+
+    return g
+
+
+# topological sort of a acyclic directed graph
 def topological_sort(g, v, visited, stack):
     # mark the current node as visited
     visited[v] = True
@@ -173,6 +186,7 @@ def topological_sort(g, v, visited, stack):
     stack.append(v)
 
 
+# shortest path in a DAG
 def shortest_path_dag(g: nx.DiGraph, s: int):
     visited = [False] * g.number_of_nodes()
     stack = []
@@ -221,12 +235,51 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
     return dist, path, sel
 
 
+# plot the graph using pyvis
+def graph_plot(g: nx.DiGraph):
+    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
+    gv.toggle_physics(False)
+    gv.from_nx(g)
+    gv.show('graph.html')
+
+
+# solve the knapsack problem using shortest (longest) path in a DAG
+def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = True):
+    # create graph
+    g = vector_to_nx(items, capacity)
+
+    # solve shortest path problem
+    t = time.time()
+    fobj, path, sel = shortest_path_dag(g, 0)
+    t = time.time() - t
+
+    # calculate remaining capacity
+    rc = capacity
+    for i in range(len(items)):
+        if sel[i] == 1:
+            rc -= items[i].weight
+
+    # plot the graph using pyvis
+    if plot:
+        graph_plot(g)
+
+    return -fobj[len(fobj)-1], sel, rc, t
+
+
 if __name__ == '__main__':
     # generate random items
     items = random_vector(1, 10, 10)
     #items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
     # set max weight
-    capacity = 6
+    #capacity = 6
+    capacity = random.randint(6, 15)
+
+    print('\nList of items:')
+    for it in range(len(items)):
+        print(f'Itm[{it}]:\t value {items[it].value}\t weight {items[it].weight}')
+    print(f'Capacity: {capacity}')
+
+    print('\n========================================\n')
 
     print('\nBranch and Bound with CPLEX')
     fobj_bb, sel_bb, rc_bb, time_bb = solve_with_knapsack_cplex(items, capacity)
@@ -246,19 +299,9 @@ if __name__ == '__main__':
 
     print('\n========================================\n')
 
-    #print('\n\nDo some tests')
-    #do_some_tests()
-
     print('Shortest Path')
-    g = vector_to_nx(items, capacity)
-    fobj_sp, path_sp, sel_sp = shortest_path_dag(g, 0)
-    print(f'Path: {path_sp}')
-    print(fobj_sp)
-    print(f'Profit: {-fobj_sp[len(fobj_sp)-1]}')
-    for i in range(len(sel_sp)):
-        if sel_sp[i] == 1:
-            print(f'x[{i}] = {sel_sp[i]}')
-    print(f'{path_sp[len(path_sp)-2]}: {fobj_sp[path_sp[len(path_sp)-2]]}')
+    fobj_sp, sel_sp, rc_sp, time_sp = solve_with_shortest_path_dag(items, capacity)
+    print_solution(fobj_sp, sel_sp, rc_sp, time_sp)
 
     print('\n========================================\n')
 
@@ -266,8 +309,8 @@ if __name__ == '__main__':
     same = check_solution(sel_bb, sel_sp)
     print(f'Branch and Bound with CPLEX and Shortest Path give the same solution: {same} \n')
 
+    print('\n========================================\n')
 
-    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
-    gv.toggle_physics(False)
-    gv.from_nx(g)
-    gv.show('graph.html')
+    print('\n\nDo some tests')
+    do_some_tests()
+    print('\n\n')
