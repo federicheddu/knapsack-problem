@@ -46,7 +46,11 @@ Dobbiamo riempire uno zaino con oggetti di valore massimo. Ogni oggetto ha un pe
 
 <br>
 
-## **Requisiti, utilizzo ed output**
+<details>
+<summary>
+<h2>Requisiti, utilizzo ed output</h2>
+</summary>
+
 Requisiti per l'utilizzo del progetto:
 - Python 3.9+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
 - pip 21.0+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
@@ -114,3 +118,4 @@ Same solution: True
 
 ...
 ```
+</details>
