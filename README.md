@@ -52,25 +52,30 @@ Requisiti per l'utilizzo del progetto:
 - pip 21.0+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
 - ILOG CPLEX Optimization Studio 22.1.1 - [[download link](https://www.ibm.com/it-it/products/ilog-cplex-optimization-studio)]
 
-Una volta clonata la repository, per eseguire il progetto consigliamo di creare una propria `venv` dentro la cartella source.
+> Note:
+> in base alla versione di Python installata potrebbe essere necessario utilizzare `pip3` al posto di `pip` e `python3` al posto di `python`
+
+Clonata la repository, consigliamo di creare una propria `venv` dentro la cartella source:
 ```bash
 cd <path_to_this_repo>/source
-python<version> -m venv <virtual_environment_name>
+python -m venv <virtual_environment_name>
 source <virtual_enviroment_name>/bin/activate
 ```
 
-Nel progetto è stato utilizzato `docplex` (interfaccia Python per CPLEX) per quanto riguarda l'esecuzione del Branch & Bound, mentre `networkx` e `pyvis` sono stati utilizzati rispettivamente per la creazione e la visualizzazione dei grafi.
+Nel progetto è stato utilizzato `docplex` (interfaccia Python per CPLEX) per la risoluzione del problema tramite Branch & Bound, mentre `networkx` e `pyvis` sono stati utilizzati rispettivamente per la creazione e la visualizzazione dei grafi.
+
+Per installare le dipendenze:
 ```bash
 # DS: installazione di docplex
-python<version> <path_to_CPLEX>/python/setup.py install
+python <path_to_CPLEX>/python/setup.py install
 # NFO: networkx e pyvis per la creazione e visualizzazione dei grafi
-pip<version> install networkx
-pip<version> install pyvis
+pip install networkx
+pip install pyvis
 ```
 
 Una volta installate le dipendenze si può eseguire il progetto
 ```bash
-python<version> main.py
+python main.py
 ```
 
 Il progetto produrrà in output il log di un test con una lista di items generata casualmente e una capacità dello zaino cauale secondo il pattern:
@@ -97,7 +102,7 @@ Time = 0.033518075942993164
 
 ```
 
-Insime al log verrà prodotto un grafo che rappresenta la modellazione del problema come shortest (longest) path problem. Il grafo verrà salvato nella cartella `source` con il nome `graph.html`.
+Insime al log verrà prodotto un grafo che rappresenta la modellazione del problema come shortest (longest) path problem. Il grafo verrà salvato nella cartella `source` con il nome `graph.html` e sarà visualizzabile tramite il proprio browser.
 
 Successivamente verrà effettuato un 5 test con numero di items crescente [10, 50, 100, 500, 1000] e capacità dello zaino fissa, e verrà prodotto un log del tipo:
 ```
