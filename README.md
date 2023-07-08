@@ -14,8 +14,8 @@
 <br>
 
 > ### **Table of Content**
->  1. [Utilizzo](#utilizzo)
-> 
+>  1. [Introduzione al problema](#introduzione-al-problema)
+>  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
 ```
@@ -23,12 +23,12 @@ REPOSITORY STRUCTURE
 ·
 │
 │ FOLDERS
-├── DS_source       //codice sorgente Decision Science
+├── source          //codice sorgente
 │   └── main.py
 │
 │ FILES
 ├── README.md
-└── ...
+└── .gitignore
 ```
 
 <br>
@@ -37,20 +37,75 @@ REPOSITORY STRUCTURE
 
 <br>
 
-## **Utilizzo**
-Per entrambi i progetti è stato utilizzato python in versione 3.9.
-Per quanto riguarda l'esecuzione del codice consigliamo consigliamo di creare una propria `venv` come *enviroment*.
+## **Introduzione al problema**
+Dobbiamo riempire uno zaino con oggetti di valore massimo. Ogni oggetto ha un peso e un valore, e lo zaino ha una capacità massima. Il problema è quello di trovare la combinazione di oggetti che massimizza il valore totale, senza superare la capacità dello zaino.
 
-<details>
-<summary><h3>Decision Science</h3></summary>
-Nel progetto è stata impiegata l'interfaccia python di CPLEX `docplex`.
+<br>
 
-Dopo aver installato CPLEX sulla propria macchina [[download link](https://www.ibm.com/it-it/products/ilog-cplex-optimization-studio)], aprire l'enviroment su cui si vuole eseguire il codice e mandare il seguente comando per installare `docplex`:
+---
+
+<br>
+
+## **Requisiti, utilizzo ed output**
+Requisiti per l'utilizzo del progetto:
+- Python 3.9+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
+- pip 21.0+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
+- ILOG CPLEX Optimization Studio 22.1.1 - [[download link](https://www.ibm.com/it-it/products/ilog-cplex-optimization-studio)]
+
+Una volta clonata la repository, per eseguire il progetto consigliamo di creare una propria `venv` dentro la cartella source.
 ```bash
-python /home_of_applications/CPLEX_Studio_Community2211/python/setup.py install
-```  
-> **Note**
-> Il path dove si trova il file setup.py può variare in base alla versione di CPLEX installata e la posizione dove CPLEX è stato installato.
+cd <path_to_this_repo>/source
+python<version> -m venv <virtual_environment_name>
+source <virtual_enviroment_name>/bin/activate
+```
 
-L'enviroment è pronto per eseguire il file [main.py](DS_source/main.py) con i vari test.
-</details>
+Nel progetto è stato utilizzato `docplex` (interfaccia Python per CPLEX) per quanto riguarda l'esecuzione del Branch & Bound, mentre `networkx` e `pyvis` sono stati utilizzati rispettivamente per la creazione e la visualizzazione dei grafi.
+```bash
+# DS: installazione di docplex
+python<version> <path_to_CPLEX>/python/setup.py install
+# NFO: networkx e pyvis per la creazione e visualizzazione dei grafi
+pip<version> install networkx
+pip<version> install pyvis
+```
+
+Una volta installate le dipendenze si può eseguire il progetto
+```bash
+python<version> main.py
+```
+
+Il progetto produrrà in output il log di un test con una lista di items generata casualmente e una capacità dello zaino cauale secondo il pattern:
+```
+List of items:
+Itm[0]:  value 7        weight 1
+...
+Itm[n]:  value 5        weight 10
+Capacity: 10
+
+========================================
+
+<Tipo di algoritmo per la soluzione>
+Profit = 28, Residual capacity = 2
+x[0] = 1
+x[3] = 1
+...
+x[7] = 1
+Time = 0.033518075942993164
+
+========================================
+
+...
+
+```
+
+Insime al log verrà prodotto un grafo che rappresenta la modellazione del problema come shortest (longest) path problem. Il grafo verrà salvato nella cartella `source` con il nome `graph.html`.
+
+Successivamente verrà effettuato un 5 test con numero di items crescente [10, 50, 100, 500, 1000] e capacità dello zaino fissa, e verrà prodotto un log del tipo:
+```
+Number of items: 10
+FObj BB: 37, Time BB: 0.01954793930053711
+FObj PD: 37, Time PD: 3.695487976074219e-05
+FObj SP: 37, Time SP: 0.00022411346435546875
+Same solution: True
+
+...
+```
