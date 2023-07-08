@@ -15,6 +15,7 @@
 
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
+>  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
@@ -32,18 +33,67 @@ REPOSITORY STRUCTURE
 ```
 
 <br>
-
----
-
 <br>
 
 ## **Introduzione al problema**
-Dobbiamo riempire uno zaino con oggetti di valore massimo. Ogni oggetto ha un peso e un valore, e lo zaino ha una capacità massima. Il problema è quello di trovare la combinazione di oggetti che massimizza il valore totale, senza superare la capacità dello zaino.
+Il *Problema dello Zaino* (o *Knapsack Problem*, *KP*) è un problema di ottimizzazione combinatoria che consiste nel trovare il modo più efficiente di riempire uno zaino con oggetti di vario peso e valore. Il problema è di tipo NP-hard, ovvero non esiste un algoritmo polinomiale che lo risolva in tempo polinomiale, ma esistono algoritmi che lo risolvono in tempo pseudo-polinomiale.
+
+Il problema è formulato come segue: dato uno zaino di capacità $W$ e una serie $N$ di oggetti, ognuno caratterizzato da un peso $w$ e un valore $v$, trovare il modo di riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino.
+
+La funzione obiettivo da massimizzare è la seguente:
+$$ Z = \sum_{i=1}^{n} v_i \cdot x_i $$
+$x_i$ è la variabile decisionale che indica se l'oggetto $i$ è stato inserito nello zaino o meno.
+
+I vincoli da rispettare sono:
+$$ \sum_{i=1}^{n} w_i \cdot x_i \leq W $$
+
+In base al tipo di variabile decisionale $x_i$ si possono avere tre tipi di KP:
+- **0-1 Knapsack Problem**: $x_i \in \{0, 1\}$
+- **Bounded Knapsack Problem**: $x_i \in \{0, 1, ..., b_i\}$
+- **Unbounded Knapsack Problem**: $x_i \in \mathbb{N}$
+
+**Nel nostro caso abbiamo trattato il KP come un 0-1 KP.**
+
+Il problema viene trattato con tre diversi approcci:
+- **Branch & Bound**: viene utilizzato CPLEX per risolvere il problema con un algoritmo di B&B
+- **Programmazione Dinamica**: viene utilizzato un algoritmo di PD per risolvere il problema
+- **Shortest (Longest) Path Problem**: viene modellato il problema come un problema di cammino minimo (massimo) su un grafo pesato
+> *I primi due metori vengono trattati nel corso di **Decision Science**, mentre il terzo viene trattato nell'esame di **Network Flow Optimization***
 
 <br>
+<br>
 
----
+## **Shortest (Longest) Path Problem**
+Il problema del cammino minimo consiste nel trovare il cammino di costo minimo tra due nodi di un grafo pesato. Il problema può essere *"ribaltato"* per trovare il cammino di costo massimo tra due nodi di un grafo pesato andando a cambiare il segno dei costi degli archi.
 
+Il Knapsack Problem può essere modellato come un problema di cammino massimo su un grafo pesato.  
+Il grafo è composto da $N \cdot (W+1) + 2$ nodi, dove $N$ è il numero di oggetti e $W$ è la capacità dello zaino, mentre i due nodi aggiuntivi corrispondono al nodo *source* e al nodo *target*.  
+Per ogni oggetto $x$ ci sono $W+1$ nodi, uno per ogni possibile peso attualmente presente nello zaino, quindi definiamo il nodo $x_i$ come il nodo corrispondente all'oggetto $x$ ($0 \le x < N$) quando stiamo occupando $i$ all'interno dello zaino, $0 \le i \le W$.  
+Ogni nodo $x_i$ (ed il nodo source $s_0$) è collegato:
+- al nodo $(x+1)_i$ con un arco di peso $0$
+- al nodo $(x+1)_{i+(w+1)}$ con un arco di peso $v_x$ se $i+w_x \leq W$, altrimenti non è collegato a nessun altro nodo
+
+I nodi corrispondenti all'ultimo oggetto sono collegati al nodo target $t$ con un arco di peso $0$.
+
+Se andiamo a cercare il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ otteniamo il valore massimo che possiamo ottenere riempiendo lo zaino.  
+Gli oggetti selezionati sono quelli nel cammino che hanno un arco entrante con peso maggiore di zero.
+
+> Esempio: prendiamo in considerazione il seguente KP
+> | *$x$* | 0   | 1   | 2   | 3   |
+> | --- | --- | --- | --- | --- |
+> | *$v$* | 40  | 15  | 20  | 10  |
+> | *$w$* | 4   | 2   | 3   | 1   |
+> $W = 5$
+>
+> Il grafo costruito sarà il seguente:
+> ![graph](./images/graph_example.png)
+> Il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ è il seguente:  
+> [$s_0$, $0_4$, $1_6$, $2_6$, $3_6$, $t$]
+> 
+> Gli oggetti selezionati sono quindi $x = [0, 1]$  
+> Il valore totale è $Z = 40 + 15 = 55$
+
+<br>
 <br>
 
 <details>
