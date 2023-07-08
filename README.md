@@ -41,11 +41,11 @@ Il *Problema dello Zaino* (o *Knapsack Problem*, *KP*) è un problema di ottimiz
 Il problema è formulato come segue: dato uno zaino di capacità $W$ e una serie $N$ di oggetti, ognuno caratterizzato da un peso $w$ e un valore $v$, trovare il modo di riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino.
 
 La funzione obiettivo da massimizzare è la seguente:
-$$ Z = \sum_{i=1}^{n} v_i \cdot x_i $$
+$$Z = \sum_{i=1}^{n} v_i \cdot x_i$$
 $x_i$ è la variabile decisionale che indica se l'oggetto $i$ è stato inserito nello zaino o meno.
 
-I vincoli da rispettare sono:
-$$ \sum_{i=1}^{n} w_i \cdot x_i \leq W $$
+Il vincolo da rispettare invece è:
+$$\sum_{i=1}^{n} w_i \cdot x_i \leq W$$
 
 In base al tipo di variabile decisionale $x_i$ si possono avere tre tipi di KP:
 - **0-1 Knapsack Problem**: $x_i \in \{0, 1\}$
@@ -79,16 +79,16 @@ Se andiamo a cercare il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$
 Gli oggetti selezionati sono quelli nel cammino che hanno un arco entrante con peso maggiore di zero.
 
 > Esempio: prendiamo in considerazione il seguente KP
-> | *$x$* | 0   | 1   | 2   | 3   |
-> | --- | --- | --- | --- | --- |
-> | *$v$* | 40  | 15  | 20  | 10  |
-> | *$w$* | 4   | 2   | 3   | 1   |
+> | $x$ | 0   | 1   | 2   | 3   |
+> |:---:| --- | --- | --- | --- |
+> | $v$ | 40  | 15  | 20  | 10  |
+> | $w$ | 4   | 2   | 3   | 1   |
 > $W = 5$
 >
 > Il grafo costruito sarà il seguente:
 > ![graph](./images/graph_example.png)
 > Il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ è il seguente:  
-> [$s_0$, $0_4$, $1_6$, $2_6$, $3_6$, $t$]
+> [ $s_0$, $0_4$, $1_6$, $2_6$, $3_6$, $t$]
 > 
 > Gli oggetti selezionati sono quindi $x = [0, 1]$  
 > Il valore totale è $Z = 40 + 15 = 55$
