@@ -16,7 +16,12 @@
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
 >  1. [Programmazione dinamica](#programmazione-dinamica)
+>      - [Esempio](#esempio)
+>      - [Implementazione](#implementazione)
 >  1. [Branch and bound](#branch-and-bound)
+>      - [CPLEX Optimizer](#cplex-optimizer)
+>      - [Esempio](#esempio)
+>      - [Implementazione](#implementazione)
 >  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
 >      - [Implementazione](#implementazione)
 >      - [Esempio](#esempio)
@@ -68,7 +73,7 @@ Il problema viene trattato con tre diversi approcci:
 <br>
 <br>
 
-## **Programmazione dinamica**
+### **Programmazione dinamica**
 
 Questa tecnica si basa sull'idea di suddividere il problema in sottoproblemi più piccoli, risolverli separatamente e combinare le loro soluzioni per ottenere la soluzione globale;
 nel contesto del problema dello zaino, può essere utilizzata per risolvere la variante del problema in cui gli oggetti possono essere inclusi nello zaino solo una volta (0-1 knapsack problem).
@@ -78,10 +83,6 @@ L'approccio della programmazione dinamica per risolvere il problema dello zaino 
 Il riempimento della tabella avviene in modo iterativo, calcolando i valori massimi per ogni cella sulla base dei valori precedentemente calcolati. Per ogni oggetto, si confronta il valore di includerlo nello zaino con il valore di escluderlo. Se includere l'oggetto porta a un valore complessivo maggiore, viene calcolato il valore massimo combinando l'oggetto con il valore ottenuto dai pesi rimanenti. Altrimenti, si copia il valore massimo della riga precedente.
 
 Alla fine del processo, la cella nell'angolo in basso a destra conterrà il valore massimo ottenibile. Inoltre, tracciando un percorso all'indietro attraverso la tabella, è possibile determinare quali oggetti sono stati inclusi nello zaino per ottenere il valore massimo.
-
-Sotto si può vedere un esempio del procedimento:
-
-![example](./images/Knapsack_problem_dynamic_programming.gif)
 
 La formulazione matematica della matrice $V[i,j]$, dati i vettori del peso $w$ e del valore $v$ è:
 
@@ -93,8 +94,14 @@ V[i,j] =
       max(V[i-1,j],  v_{i-1}+V[i-1, j-w_{i-1}]) & \text{otherwise}
     \end{cases}
 $$
+## **Esempio**
+Sotto si può vedere un esempio del procedimento:
 
-### **Implementazione**
+![example](./images/Knapsack_problem_dynamic_programming.gif)
+
+
+
+## **Implementazione**
 L'implementazione della programmazione dinamica è stata fatta tramite una funzione: 
 la quale prende in input il vettore degli oggetti e la capacità massima dello zaino, poi dichiara delle variabili ausilirie come ```n``` che è il numero di oggetti nel vettore, la tabella ```table``` per l'esecuzione dell'algoritmo vero e proprio, e infine selected che una variabile in cui viene salvata la soluzione.
 
@@ -147,7 +154,7 @@ Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacit
 <br>
 <br>
 
-## **Branch and bound**
+### **Branch and bound**
 Il branch and bound è un paradigma di progettazione algoritmica utilizzato per risolvere problemi di ottimizzazione combinatoria. Questo approccio esplora tutte le possibili permutazioni tenendo conto dei vincoli, rendendolo più efficace rispetto ad altri approcci. Utilizzando limiti (bounds) e il taglio (pruning) delle soluzioni non fattibili, l'algoritmo ricerca in modo efficiente la soluzione ottimale.
 
 Nel contesto del problema dello zaino (knapsack problem), l'algoritmo sfrutta una strategia di esplorazione ad albero per generare tutte le possibili combinazioni degli oggetti da mettere nello zaino. Durante la ricerca, vengono calcolati limiti superiori e inferiori per ogni nodo dell'albero, al fine di determinare quali rami dell'albero possono essere potati (tagliati) senza influire sulla ricerca della soluzione ottimale.
@@ -156,15 +163,23 @@ Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale d
 
 L'utilizzo del branch and bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
 
-### **CPLEX Optimizer**
+## **CPLEX Optimizer**
 IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
 
 Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
 
 CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
 
+## **Esempio**
+L'aspetto dell'albero per la risoluzione di un problema di knapsack tramite Brnach and bound dovrebbe essere simile a questo:
+<br>
+<br>
+<br>
+![example](./images/bebExample.jpg)
 
-### **Implementazione**
+
+
+## **Implementazione**
 Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
 
 Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo il ratio di valore e peso per poter avere il miglior risultato possibile, altrimenti si potrebbe usare per impostare l'Upper bound secondo la formula:
