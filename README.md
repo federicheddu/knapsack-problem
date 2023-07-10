@@ -130,6 +130,36 @@ Vengono creati gli oggetti variabili utilizzando il metodo "binary_var_list" del
 x = model.binary_var_list(len(items), name='x')
 ```
 
+Viene definita la funzione obiettivo utilizzando il metodo "maximize" del modello. La funzione obiettivo cerca di massimizzare il valore totale degli oggetti nello zaino. Viene calcolato il valore totale moltiplicando il valore di ogni oggetto per la corrispondente variabile "x" e sommando i risultati.
+
+```python
+# create objective function
+model.maximize(model.sum([items[i].value * x[i] for i in range(len(items))]))
+```
+
+Vengono creati i vincoli utilizzando il metodo "add_constraint" del modello. Il vincolo impone che il peso totale degli oggetti nello zaino non superi la capacità massima del contenitore. Viene calcolato il peso totale moltiplicando il peso di ogni oggetto per la corrispondente variabile "x" e sommando i risultati. Il risultato totale deve essere inferiore o uguale alla capacità.
+
+```python
+# create constraints
+model.add_constraint(model.sum([items[i].weight * x[i] for i in range(len(items))]) <= capacity)
+```
+
+Viene impostata come strategia il Branch and bound utilizzando "set" sull'oggetto "mip.strategy.branch" indicherà a CPLEX di quale metodo usare durante la risoluzione del problema.
+
+```python
+# set branch and bound strategy
+model.parameters.mip.strategy.branch.set(1)
+```
+
+Infine viene risolto il modello utilizzando il metodo "solve". Questo avvia l'algoritmo di ottimizzazione di CPLEX per trovare la soluzione ottimale del problema dello zaino. La soluzione ottimale viene restituita insieme all'oggetto modello.
+
+```python
+# solve model
+sol = model.solve()
+# return solution
+return sol, model
+```
+
 <br>
 <br>
 
