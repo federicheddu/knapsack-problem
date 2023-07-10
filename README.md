@@ -83,6 +83,8 @@ Sotto si può vedere un esempio del procedimento:
 
 ![example](./images/Knapsack_problem_dynamic_programming.gif)
 
+La formulazione matematica della matrice $V[i,j]$, dati i vettori del peso $w$ e del valore $v$ è:
+
 $$
 V[i,j] =
     \begin{cases}
@@ -96,6 +98,37 @@ $$
 <br>
 
 ## **Branch and bound**
+Il branch and bound è un paradigma di progettazione algoritmica utilizzato per risolvere problemi di ottimizzazione combinatoria. Questo approccio esplora tutte le possibili permutazioni tenendo conto dei vincoli, rendendolo più efficace rispetto ad altri approcci. Utilizzando limiti (bounds) e il taglio (pruning) delle soluzioni non fattibili, l'algoritmo ricerca in modo efficiente la soluzione ottimale.
+
+Nel contesto del problema dello zaino (knapsack problem), l'algoritmo sfrutta una strategia di esplorazione ad albero per generare tutte le possibili combinazioni degli oggetti da mettere nello zaino. Durante la ricerca, vengono calcolati limiti superiori e inferiori per ogni nodo dell'albero, al fine di determinare quali rami dell'albero possono essere potati (tagliati) senza influire sulla ricerca della soluzione ottimale.
+
+Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale del problema. Successivamente, genera i figli di questo nodo considerando le possibili scelte degli oggetti da mettere nello zaino. Calcola i limiti superiori e inferiori per ogni figlio e ordina i figli in base a questi limiti. Successivamente, l'algoritmo seleziona il figlio con il limite superiore più alto e lo esamina ulteriormente, generando i suoi figli e calcolando nuovi limiti. Questo processo continua fino a quando non vengono esplorate tutte le possibili combinazioni o fino a quando non viene trovata una soluzione ottimale.
+
+L'utilizzo del branch and bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
+### **CPLEX Optimizer**
+IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
+
+Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
+
+CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
+### **Implementazione**
+Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
+
+
+Viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
+
+
+```python
+# create model
+model = Model(name='knapsack')
+```
+
+Vengono creati gli oggetti variabili utilizzando il metodo "binary_var_list" del modello. Queste variabili, indicate con il nome "x", rappresentano le scelte degli oggetti da mettere nello zaino. Sono variabili binarie, il che significa che possono assumere solo valori 0 o 1.
+
+```python
+# create variables
+x = model.binary_var_list(len(items), name='x')
+```
 
 <br>
 <br>
@@ -128,7 +161,7 @@ Per trovare il cammino minimo (massimo), dato che il grafo è un DAG, viene iniz
 <summary> Codice </summary>
 
 ```python
-# topological sort of a acyclic directed graph
+# topological sort of an acyclic directed graph
 visited = [False] * g.number_of_nodes()
 stack = []
 
