@@ -174,8 +174,7 @@ path.reverse()
 
 Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zaino. Dato il path $p$, per riconoscere gli oggetti si prendono i nodi che sono collegati al nodo precedente con un arco di peso diverso da zero, quindi la distanza del nodo $p_i$ da $s_0$ è diversa dalla distanza del nodo $p_{i-1}$ da $s_0$.
 
-<details>
-<summary> <h3> Esempio problema con shortest path</h3> </summary>
+### **Esempio problema con shortest path**
 
 > Esempio: prendiamo in considerazione il seguente KP
 > | $x$ | 0   | 1   | 2   | 3   |
@@ -192,15 +191,14 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 > Gli oggetti selezionati sono quindi $x = [0, 1]$  
 > Il valore totale è $Z = 40 + 15 = 55$
 
-</details>
+<br>
+<br>
 
-<br>
-<br>
+## **Requisiti, utilizzo ed output**
+
 
 <details>
-<summary>
-<h2>Requisiti, utilizzo ed output</h2>
-</summary>
+<summary> <h3><b>Requisiti</b></h3> </summary>
 
 Requisiti per l'utilizzo del progetto:
 - Python 3.9+ - *quello con cui abbiamo eseguito il progetto, potrebbe funzionare anche con versioni precedenti*
@@ -209,6 +207,13 @@ Requisiti per l'utilizzo del progetto:
 
 > Note:
 > in base alla versione di Python installata potrebbe essere necessario utilizzare `pip3` al posto di `pip` e `python3` al posto di `python`
+
+</details>
+
+<br>
+
+<details>
+<summary> <h3><b>Utilizzo</b></h3> </summary>
 
 Clonata la repository, consigliamo di creare una propria `venv` dentro la cartella source:
 ```bash
@@ -232,6 +237,13 @@ Una volta installate le dipendenze si può eseguire il progetto
 ```bash
 python main.py
 ```
+
+</details>
+
+<br>
+
+<details>
+<summary> <h3><b>Output</b></h3> </summary>
 
 Il progetto produrrà in output il log di un test con una lista di items generata casualmente e una capacità dello zaino cauale secondo il pattern:
 ```
