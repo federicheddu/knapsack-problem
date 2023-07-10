@@ -155,6 +155,7 @@ Nel contesto del problema dello zaino (knapsack problem), l'algoritmo sfrutta un
 Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale del problema. Successivamente, genera i figli di questo nodo considerando le possibili scelte degli oggetti da mettere nello zaino. Calcola i limiti superiori e inferiori per ogni figlio e ordina i figli in base a questi limiti. Successivamente, l'algoritmo seleziona il figlio con il limite superiore più alto e lo esamina ulteriormente, generando i suoi figli e calcolando nuovi limiti. Questo processo continua fino a quando non vengono esplorate tutte le possibili combinazioni o fino a quando non viene trovata una soluzione ottimale.
 
 L'utilizzo del branch and bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
+
 ### **CPLEX Optimizer**
 IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
 
@@ -165,6 +166,11 @@ CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compr
 
 ### **Implementazione**
 Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
+
+Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo il ratio di valore e peso per poter avere il miglior risultato possibile, altrimenti si potrebbe usare per impostare l'Upper bound secondo la formula:
+
+$$Ub = v + (W-w)*(v_{i+1}/w_{i+1})$$
+
 
 Viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
 
