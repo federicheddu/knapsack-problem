@@ -18,6 +18,7 @@
 >  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
 >      - [Implementazione](#implementazione)
 >      - [Esempio](#esempio)
+>  1. [Risultati](#risultati)
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
