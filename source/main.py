@@ -32,6 +32,7 @@ def do_some_tests():
         same = check_solution(sel_bb, sel_pd)
         same = check_solution(sel_bb, sel_sp) and same
         print(f'\nNumber of items: {num}')
+        print(f'Capacity: {capacity}')
         print(f'FObj BB: {fobj_bb}, Time BB: {t_bb}')
         print(f'FObj PD: {fobj_pd}, Time PD: {t_pd}')
         print(f'FObj SP: {fobj_sp}, Time SP: {t_sp}')
@@ -245,11 +246,11 @@ def graph_plot(g: nx.DiGraph):
 
 # solve the knapsack problem using shortest (longest) path in a DAG
 def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = True):
+    
+    t = time.time()
     # create graph
     g = vector_to_nx(items, capacity)
-
     # solve shortest path problem
-    t = time.time()
     fobj, path, sel = shortest_path_dag(g, 0)
     t = time.time() - t
 

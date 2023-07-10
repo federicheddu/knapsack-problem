@@ -199,6 +199,46 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 
 ## **Risultati**
 
+Prendiamo in considerazione il seguente KP:
+| $x$ | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   |
+|:---:| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| $v$ | 2   | 10  | 5   | 4   | 2   | 7   | 10  | 10  | 8   | 1   |
+| $w$ | 8   | 9   | 5   | 8   | 3   | 1   | 8   | 1   | 9   | 6   |
+$W = 12$
+
+Questo è uno dei casi in cui i vari metodi di risoluzione non trovano tutti la stessa soluzione, pur assicurando tutti la soluzione ottima.
+
+| Metodo | Profitto | Capacità residua | Tempo                 | Soluzione |
+| ------ | -------- | ---------------- | --------------------- | --------- |
+| BB     | 27       | 2                | 0.04172015190124512   | [5, 6, 7] |
+| PD     | 27       | 1                | 4.1961669921875e-05   | [1, 5, 7] |
+| SP     | 27       | 2                | 0.0005588531494140625 | [5, 6, 7] |
+
+<details>
+<summary> Grafo generato </summary>
+
+![graph](./images/graph_results.png)
+
+</details>
+
+I casi in cui i metodi trovano soluzioni diverse sono quelli in cui ci sono più oggetti con lo stesso profitto e peso oppure quando ci sono oggetti con stesso profitto e peso simile, come nel caso in esame tra gli oggetti 1 e 6, quindi prendere un oggetto al posto dell'altro non cambia il profitto totale, in quanto entrambi ci stanno nello zaino e prendere quello col peso minore non ci permette di prendere altri oggetti.
+
+Successivamente siamo andati ad effettuare dei test su un numero di oggetti crescente per vedere come si comportano i vari metodi. Per tutti i test abbiamo utilizzato un peso fissato.
+
+$W=18$
+| Numero oggetti  | BB    | PD    | SP    | BB (tempo)               | PD (tempo)                | SP (tempo)               | Stessa soluzione |
+| --------------- | ----- | ----- | ----- | ------------------------ | ------------------------- | ------------------------ | ---------------- |
+| 10              | 44    | 44    | 44    | 0.009273052215576172     | 4.410743713378906e-05     | 0.0006861686706542969    | SI               |
+| 50              | 132   | 132   | 132   | 0.021244049072265625     | 0.00021195411682128906    | 0.0040531158447265625    | SI               |
+| 100             | 196   | 196   | 196   | 0.012026071548461914     | 0.00036001205444335940    | 0.0064010620117187500    | SI               |
+| 500             | 269   | 269   | 269   | 0.026194810867309570     | 0.00209403038024902340    | 0.0533699989318847660    | SI               |
+| 1000            | 431   | 431   | 431   | 0.023194789886474610     | 0.00406789779663085900    | 0.0905468463897705100    | NO               |
+
+Come possiamo notare dai risultati, i metodi trovano sempre la stessa soluzione, anche se gli oggetti selezionati non sono sempre gli stessi.  
+Inoltre, come ci aspettavamo, il tempo di esecuzione cresce all'aumentare del numero di oggetti, in particolare per il metodo SP, che è quello che impiega più tempo, mentre il metodo PD è quello che impiega meno tempo.
+
+> NOTE:
+> Il tempo di esecuzione è stato calcolato utilizzando la funzione `time()` della libreria `time` di Python, che restituisce il tempo in secondi con una precisione di 1 microsecondo. Per quanto riguarda il metodo SP, il tempo di esecuzione comprende anche il tempo di creazione del grafo.
 
 <br>
 <br>
