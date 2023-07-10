@@ -84,15 +84,17 @@ Sotto si può vedere un esempio del procedimento:
 ![example](./images/Knapsack_problem_dynamic_programming.gif)
 
 $$
-D_{it} =
+V[i,j] =
     \begin{cases}
-      1 & \text{if bank $i$ issues ABs at time $t$}\\
-      2 & \text{if bank $i$ issues CBs at time $t$}\\
-      0 & \text{otherwise}
+      0 & \text{if $i$=0 o $j$=0}\\
+      V[i-1,j] & \text{if $w_{i-1}$ > $j$}\\
+      max(V[i-1,j],  v_{i-1}+V[i-1, j-w_{i-1}]) & \text{otherwise}
     \end{cases}
 $$
+
 <br>
 <br>
+
 ## **Branch and bound**
 
 <br>
