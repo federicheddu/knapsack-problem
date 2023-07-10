@@ -75,8 +75,107 @@ Ogni nodo $x_i$ (ed il nodo source $s_0$) è collegato:
 
 I nodi corrispondenti all'ultimo oggetto sono collegati al nodo target $t$ con un arco di peso $0$.
 
-Se andiamo a cercare il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ otteniamo il valore massimo che possiamo ottenere riempiendo lo zaino.  
-Gli oggetti selezionati sono quelli nel cammino che hanno un arco entrante con peso maggiore di zero.
+Data la connettività che abbiamo definito, il grafo è un DAG (Directed Acyclic Graph), ed è pesato in modo tale che il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ corrisponde al valore massimo che possiamo ottenere riempiendo lo zaino.
+
+Nel path massimo tra $s_0$ e $t$ ognuno dei nodi corrisponde ad un oggetto, quindi per ottenere la soluzione ottima (gli oggetti da inserire nello zaino) dobbiamo prendere i nodi che sono collegati al nodo precedente con un arco di peso $v_x > 0$. 
+
+### **Implementazione**
+Per implementare il problema abbiamo utilizzato la libreria *NetworkX* per la creazione del grafo e la libreria *pyvis* per la visualizzazione del grafo.
+
+Dal punto di vista implementativo il nodo $s_0$ è il nodo $0$, mentre il nodo $t$ è il nodo $N \cdot (W+1) + 1$. I nodi corrispondenti agli oggetti sono i nodi da $1$ a $N \cdot (W+1)$.
+Il grafo viene creato con la funzione `vector_to_nx()` che, preso in input il vettore degli oggetti e la capacità dello zaino, crea il grafo di tipo `DiGraph` e lo restituisce. Ricordiamo che gli archi all'interno del grafo hanno peso pari all'opposto del valore dell'oggetto che collegano in quanto vogliamo trovare il cammino massimo usando l'algoritmo del cammino minimo.
+
+Per trovare il cammino minimo (massimo), dato che il grafo è un DAG, viene inizialmente eseguito un topological sort del grafo, il quale può essere eseguito con complesità computazionale $O(m)$, dove $m$ è il numero di archi.
+
+<details>
+<summary> Codice </summary>
+
+```python
+# topological sort of a acyclic directed graph
+visited = [False] * g.number_of_nodes()
+stack = []
+
+for i in range(g.number_of_nodes()):
+    if not visited[i]:
+        topological_sort(g, s, visited, stack)
+
+def topological_sort(g, v, visited, stack):
+    # mark the current node as visited
+    visited[v] = True
+
+    # recur for all adjacent vertices of v
+    for i in g.neighbors(v):
+        if visited[i] == False:
+            topological_sort(g, i, visited, stack)
+
+    stack.append(v)
+```
+
+</details>
+
+Dopo aver eseguito il topological sort vengono calcolate le distanze minime tra il nodo $s_0$ e tutti gli altri nodi del grafo, andando a visitare tutti i nodi nello stack restituito dal topological sort.
+
+<details>
+<summary> Codice </summary>
+
+```python
+dist = [float('inf')] * g.number_of_nodes()
+dist[s] = 0
+
+while stack:
+    u = stack.pop()
+
+    # update distance for all adjacent nodes
+    for v in g.neighbors(u):
+        if dist[v] > dist[u] + g[u][v]['weight']:
+            dist[v] = dist[u] + g[u][v]['weight']
+```
+
+</details>
+
+Una volta calcolate le distanze minime (che ricordiamo sono distanze massime dato che i pesi degli archi sono negativi) viene costruito il cammino minimo (massimo) tra il nodo $s_0$ e il nodo $t$.
+
+Per prima cosa si trova il nodo predecessore di $t$ tra gli $W+1$ nodi corrispondenti all'ultimo oggetto, ovvero il nodo predecessore con la stessa distanza di $t$ dal nodo $s_0$.
+
+<details>
+<summary> Codice </summary>
+
+```python
+idx = g.number_of_nodes()-1
+path.append(idx)
+for pred in g.predecessors(idx):
+    if dist[pred] == dist[g.number_of_nodes()-1]:
+        idx = pred
+        path.append(idx)
+        break
+```
+
+</details>
+
+Una volta trovato il primo predecessore si torna indietro nel grafo fino a raggiungere il nodo $s_0$. Ogni nodo d'ora in poi avrà al più due predecessori, quindi si sceglie il predecessore che ha distanza uguale alla distanza del nodo corrente meno il peso dell'arco che li collega. Come ultima cosa si inverte il cammino trovato in quanto è stato costruito partendo dal nodo $t$.
+
+<details>
+<summary> Codice </summary>
+
+```python
+while idx > 0:
+    pred = list(g.predecessors(idx))
+    #print(pred)
+    if pred[0] == 0 or dist[idx] == dist[pred[0]] + g[pred[0]][idx]['weight']:
+        idx = pred[0]
+    else:
+        idx = pred[1]
+    #print(idx)
+    path.append(idx)
+path.reverse()
+```
+
+</details>
+
+Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zaino. Dato il path $p$, per riconoscere gli oggetti si prendono i nodi che sono collegati al nodo precedente con un arco di peso diverso da zero, quindi la distanza del nodo $p_i$ da $s_0$ è diversa dalla distanza del nodo $p_{i-1}$ da $s_0$.
+
+<details>
+<summary> <h3> Esempio problema con shortest path</h3> </summary>
 
 > Esempio: prendiamo in considerazione il seguente KP
 > | $x$ | 0   | 1   | 2   | 3   |
@@ -92,6 +191,8 @@ Gli oggetti selezionati sono quelli nel cammino che hanno un arco entrante con p
 > 
 > Gli oggetti selezionati sono quindi $x = [0, 1]$  
 > Il valore totale è $Z = 40 + 15 = 55$
+
+</details>
 
 <br>
 <br>
