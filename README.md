@@ -94,6 +94,56 @@ V[i,j] =
     \end{cases}
 $$
 
+### **Implementazione**
+L'implementazione della programmazione dinamica è stata fatta tramite una funzione: 
+la quale prende in input il vettore degli oggetti e la capacità massima dello zaino, poi dichiara delle variabili ausilirie come ```n``` che è il numero di oggetti nel vettore, la tabella ```table``` per l'esecuzione dell'algoritmo vero e proprio, e infine selected che una variabile in cui viene salvata la soluzione.
+
+<details>
+<summary> Codice </summary>
+
+```python
+def knapsack_dynamic(items: List[Item], capacity: int):
+    n = len(items)
+    table = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+    selected = [0] * n
+```
+</details>
+
+Adesso si costruisce la tabella con la quale si risolve il problema vero e proprio, all'interno di due for concatenati vengono eseguiti degli else if secondo la formulazione matematica mostrata di sopra 
+
+<details>
+<summary> Codice </summary>
+
+```python
+    for i in range(n + 1):
+        for j in range(capacity + 1):
+            if i == 0 or j == 0:
+                table[i][j] = 0
+            elif items[i - 1].weight <= j:
+                table[i][j] = max(items[i - 1].value + table[i - 1][j - items[i - 1].weight], table[i - 1][j])
+            else:
+                table[i][j] = table[i - 1][j]
+```
+</details>
+
+Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacity```, si ripercorre la tabella al contrario per realizzare il vettore della soluzione, controllando se  un certo punto della tabella è diverso dal suo predecessore nella stessa riga, allora quell'oggetto sarà selezionato e il suo peso sarà sottratto da j.
+
+<details>
+<summary> Codice </summary>
+
+```python
+    i = n
+    j = capacity
+    while i > 0 and j > 0:
+        if table[i][j] != table[i - 1][j]:
+            selected[i - 1] = 1
+            j -= items[i - 1].weight
+        i -= 1
+
+    return table[n][capacity], selected, j
+```
+</details>
+
 <br>
 <br>
 
@@ -111,12 +161,12 @@ IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizz
 Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
 
 CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
+
+
 ### **Implementazione**
 Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
 
-
 Viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
-
 
 ```python
 # create model
