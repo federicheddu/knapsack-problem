@@ -15,6 +15,8 @@
 
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
+>  1. [Programmazione dinamica](#programmazione-dinamica)
+>  1. [Branch and bound](#branch-and-bound)
 >  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
 >      - [Implementazione](#implementazione)
 >      - [Esempio](#esempio)
@@ -62,6 +64,36 @@ Il problema viene trattato con tre diversi approcci:
 - **Programmazione Dinamica**: viene utilizzato un algoritmo di PD per risolvere il problema
 - **Shortest (Longest) Path Problem**: viene modellato il problema come un problema di cammino minimo (massimo) su un grafo pesato
 > *I primi due metori vengono trattati nel corso di **Decision Science**, mentre il terzo viene trattato nell'esame di **Network Flow Optimization***
+
+<br>
+<br>
+
+## **Programmazione dinamica**
+
+Questa tecnica si basa sull'idea di suddividere il problema in sottoproblemi più piccoli, risolverli separatamente e combinare le loro soluzioni per ottenere la soluzione globale;
+nel contesto del problema dello zaino, può essere utilizzata per risolvere la variante del problema in cui gli oggetti possono essere inclusi nello zaino solo una volta (0-1 knapsack problem).
+
+L'approccio della programmazione dinamica per risolvere il problema dello zaino coinvolge la creazione di una tabella, in cui le righe rappresentano gli oggetti disponibili e le colonne rappresentano i pesi possibili dello zaino. Ogni cella della tabella conterrà il valore massimo ottenibile considerando solo gli oggetti fino alla riga corrispondente e un peso massimo fino alla colonna corrispondente.
+
+Il riempimento della tabella avviene in modo iterativo, calcolando i valori massimi per ogni cella sulla base dei valori precedentemente calcolati. Per ogni oggetto, si confronta il valore di includerlo nello zaino con il valore di escluderlo. Se includere l'oggetto porta a un valore complessivo maggiore, viene calcolato il valore massimo combinando l'oggetto con il valore ottenuto dai pesi rimanenti. Altrimenti, si copia il valore massimo della riga precedente.
+
+Alla fine del processo, la cella nell'angolo in basso a destra conterrà il valore massimo ottenibile. Inoltre, tracciando un percorso all'indietro attraverso la tabella, è possibile determinare quali oggetti sono stati inclusi nello zaino per ottenere il valore massimo.
+
+Sotto si può vedere un esempio del procedimento:
+
+![example](./images/Knapsack_problem_dynamic_programming.gif)
+
+$$
+D_{it} =
+    \begin{cases}
+      1 & \text{if bank $i$ issues ABs at time $t$}\\
+      2 & \text{if bank $i$ issues CBs at time $t$}\\
+      0 & \text{otherwise}
+    \end{cases}
+$$
+<br>
+<br>
+## **Branch and bound**
 
 <br>
 <br>
