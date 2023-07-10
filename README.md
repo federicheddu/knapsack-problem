@@ -16,6 +16,8 @@
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
 >  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
+>      - [Implementazione](#implementazione)
+>      - [Esempio](#esempio)
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
@@ -174,7 +176,7 @@ path.reverse()
 
 Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zaino. Dato il path $p$, per riconoscere gli oggetti si prendono i nodi che sono collegati al nodo precedente con un arco di peso diverso da zero, quindi la distanza del nodo $p_i$ da $s_0$ è diversa dalla distanza del nodo $p_{i-1}$ da $s_0$.
 
-### **Esempio problema con shortest path**
+### **Esempio**
 
 > Esempio: prendiamo in considerazione il seguente KP
 > | $x$ | 0   | 1   | 2   | 3   |
@@ -190,6 +192,13 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 > 
 > Gli oggetti selezionati sono quindi $x = [0, 1]$  
 > Il valore totale è $Z = 40 + 15 = 55$
+
+<br>
+<br>
+
+
+## **Risultati**
+
 
 <br>
 <br>
@@ -210,7 +219,6 @@ Requisiti per l'utilizzo del progetto:
 
 </details>
 
-<br>
 
 <details>
 <summary> <h3><b>Utilizzo</b></h3> </summary>
@@ -240,7 +248,6 @@ python main.py
 
 </details>
 
-<br>
 
 <details>
 <summary> <h3><b>Output</b></h3> </summary>
