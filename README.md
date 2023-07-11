@@ -116,7 +116,7 @@ def knapsack_dynamic(items: List[Item], capacity: int):
 ```
 </details>
 
-Adesso si costruisce la tabella con la quale si risolve il problema vero e proprio, all'interno di due for concatenati vengono eseguiti degli else if secondo la formulazione matematica mostrata di sopra 
+Adesso si costruisce la tabella con la quale si risolve il problema vero e proprio, all'interno di due for concatenati vengono eseguiti una serie di if ed else secondo la formulazione matematica mostrata di sopra.
 
 <details>
 <summary> Codice </summary>
