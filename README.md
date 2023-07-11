@@ -171,7 +171,7 @@ Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione u
 CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
 
 ## **Esempio**
-L'aspetto dell'albero per la risoluzione di un problema di knapsack tramite Brnach and bound dovrebbe essere simile a questo:
+L'aspetto di un albero per la risoluzione del problema di knapsack tramite Branch and bound dovrebbe essere simile a questo:
 <br>
 <br>
 <br>
