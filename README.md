@@ -133,7 +133,7 @@ Adesso si costruisce la tabella con la quale si risolve il problema vero e propr
 ```
 </details>
 
-Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacity```, si ripercorre la tabella al contrario per realizzare il vettore della soluzione, controllando se  un certo punto della tabella è diverso dal suo predecessore nella stessa riga, allora quell'oggetto sarà selezionato e il suo peso sarà sottratto da j.
+Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacity```, si ripercorre la tabella al contrario per realizzare il vettore della soluzione, controllando se  un certo punto della tabella è diverso dal suo predecessore nella stessa riga, allora quell'oggetto sarà selezionato e il suo peso sarà sottratto da ```j```.
 
 <details>
 <summary> Codice </summary>
