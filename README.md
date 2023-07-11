@@ -103,7 +103,7 @@ Sotto si può vedere un esempio del procedimento:
 
 ## **Implementazione**
 L'implementazione della programmazione dinamica è stata fatta tramite una funzione: 
-la quale prende in input il vettore degli oggetti e la capacità massima dello zaino, poi dichiara delle variabili ausilirie come ```n``` che è il numero di oggetti nel vettore, la tabella ```table``` per l'esecuzione dell'algoritmo vero e proprio, e infine selected che una variabile in cui viene salvata la soluzione.
+la quale prende in input il vettore degli oggetti e la capacità massima dello zaino, poi dichiara delle variabili ausilirie come ```n``` che è il numero di oggetti nel vettore, la tabella ```table``` per l'esecuzione dell'algoritmo vero e proprio, e infine ```selected``` in cui viene salvata la soluzione.
 
 <details>
 <summary> Codice </summary>
