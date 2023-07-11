@@ -95,7 +95,7 @@ V[i,j] =
     \end{cases}
 $$
 ## **Esempio**
-Sotto si può vedere un esempio del procedimento:
+Sotto si può vedere un esempio del procedimento della creazione della tabella:
 
 ![example](./images/Knapsack_problem_dynamic_programming.gif)
 
