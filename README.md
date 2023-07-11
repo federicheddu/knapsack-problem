@@ -182,7 +182,7 @@ L'aspetto di un albero per la risoluzione del problema di knapsack tramite Branc
 ## **Implementazione**
 Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
 
-Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo il ratio di valore e peso per poter avere il miglior risultato possibile, altrimenti si potrebbe usare per impostare l'Upper bound secondo la formula:
+Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo il ratio di valore e peso per poter avere il miglior risultato possibile, il ratio viene anche usato per impostare l'Upper bound secondo la formula:
 
 $$Ub = v + (W-w)*(v_{i+1}/w_{i+1})$$
 
