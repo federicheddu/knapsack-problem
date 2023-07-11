@@ -186,8 +186,9 @@ Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo 
 
 $$Ub = v + (W-w)*(v_{i+1}/w_{i+1})$$
 
-
-Viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
+<br>
+<br>
+Come primo passo viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
 
 ```python
 # create model
