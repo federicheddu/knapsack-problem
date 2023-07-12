@@ -121,7 +121,8 @@ x = model.binary_var_list(len(items), name='x')
 ```
 </details>
 
-Viene impostata la funzione obiettivo utilizzando il metodo `.maximize()` del modello. La funzione obiettivo cerca di massimizzare il valore totale degli oggetti nello zaino, il quale viene calcolato facendo la somma della moltiplicazione tra ogni variabile binaria e il valore dell'oggetto corrispondente.  
+Viene impostata la funzione obiettivo utilizzando il metodo `.maximize()` del modello. La funzione obiettivo cerca di massimizzare il valore totale degli oggetti nello zaino, il quale viene calcolato facendo la somma della moltiplicazione tra ogni variabile binaria e il valore dell'oggetto corrispondente.
+
 I vincoli vengono creati utilizzando il metodo `.add_constraint()`. Il vincolo impone che il peso totale degli oggetti nello zaino non superi la capacità massima del contenitore. Viene calcolato il peso totale moltiplicando il peso di ogni oggetto per la corrispondente variabile "x" e sommando i risultati. Il risultato totale deve essere inferiore o uguale alla capacità.
 
 <details>
