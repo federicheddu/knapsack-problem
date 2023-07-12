@@ -49,7 +49,8 @@ REPOSITORY STRUCTURE
 
 ## **Introduzione al problema**
 
-<img style="float: left; padding: 1%" width="15%" src="images/Knapsack_Problem_Illustration.svg.png">
+<img style="float: left; padding: 1" width="15%" src="images/Knapsack_Problem_Illustration.svg.png">
+
 Il *Problema dello Zaino* (o *Knapsack Problem*, *KP*) è un problema di ottimizzazione combinatoria che consiste nel trovare il modo più efficiente di riempire uno zaino con oggetti di vario peso e valore. Il problema è di tipo NP-hard, ovvero non esiste un algoritmo polinomiale che lo risolva in tempo polinomiale, ma esistono algoritmi che lo risolvono in tempo pseudo-polinomiale.
 
 Il problema è formulato come segue: dato uno zaino di **capacità** $W$ e una serie di $N$ **oggetti**, ognuno caratterizzato da un **peso** $w$ e un **valore** $v$, trovare il modo di **riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino**.
