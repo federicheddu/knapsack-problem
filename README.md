@@ -1,6 +1,6 @@
 # **Knapsack Problem**
 
->  Questo è un progetto svolto nell'ambito degli esami di **Decision Scienze** *(a.k.a. Ricerca Operativa)* e **Network Flow Optimization** del **CdLM in Informatica** presso l'Università degli Studi di Cagliari
+>  Questo è un progetto svolto nell'ambito degli esami di **Decision Scienze** *(a.k.a. Ricerca Operativa)* e **Network Flow Optimization** del **CdLM in Informatica** presso l'**Università degli Studi di Cagliari**
 
 | **Studente**          | **Matricola** | **E-Mail**                        |
 |-----------------------|---------------|-----------------------------------|
@@ -16,7 +16,6 @@
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
 >  1. [Branch and bound](#branch-and-bound)
->      - [CPLEX Optimizer](#cplex-optimizer)
 >      - [Esempio](#esempio)
 >      - [Implementazione](#implementazione)
 >  1. [Programmazione dinamica](#programmazione-dinamica)
@@ -29,7 +28,7 @@
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
-```c
+```
 REPOSITORY STRUCTURE
 ·
 │
@@ -49,6 +48,8 @@ REPOSITORY STRUCTURE
 <br>
 
 ## **Introduzione al problema**
+
+<img style="float: left; padding: 1%" width="15%" src="images/Knapsack_Problem_Illustration.svg.png">
 Il *Problema dello Zaino* (o *Knapsack Problem*, *KP*) è un problema di ottimizzazione combinatoria che consiste nel trovare il modo più efficiente di riempire uno zaino con oggetti di vario peso e valore. Il problema è di tipo NP-hard, ovvero non esiste un algoritmo polinomiale che lo risolva in tempo polinomiale, ma esistono algoritmi che lo risolvono in tempo pseudo-polinomiale.
 
 Il problema è formulato come segue: dato uno zaino di **capacità** $W$ e una serie di $N$ **oggetti**, ognuno caratterizzato da un **peso** $w$ e un **valore** $v$, trovare il modo di **riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino**.
@@ -85,13 +86,6 @@ Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale d
 
 L'utilizzo del Branch and Bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
 
-### **CPLEX Optimizer**
-IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
-
-Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
-
-CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
-
 ### **Esempio**
 > Di seguito un Knapsack Problem di esempio risolto con Branch and Bound:
 >
@@ -100,7 +94,7 @@ CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compr
 
 
 ### **Implementazione**
-Per implementare il problema abbiamo utilizzato la libreria *docplex* per poter utilizzare CPLEX tramite python.
+Per implementare il problema abbiamo utilizzato la libreria *docplex* per poter utilizzare l'ottimizzatore CPLEX tramite python.
 
 Come passo di preprocessing, il vettore degli oggetti è stato ordinato secondo il ratio tra valore e peso in modo da poter avere il miglior risultato possibile, il ratio viene anche usato per impostare l'upper bound secondo la formula:
 
