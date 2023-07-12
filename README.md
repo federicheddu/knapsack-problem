@@ -361,7 +361,9 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 > | $w$ | 4   | 2   | 3   | 1   |
 >
 > Il grafo costruito sarà il seguente:
+> 
 > ![graph](./images/graph_example.png)
+> 
 > Il cammino di costo massimo tra il nodo $s_0$ e il nodo $t$ è il seguente:  
 > [ $s_0$, $0_4$, $1_6$, $2_6$, $3_6$, $t$]
 > 
