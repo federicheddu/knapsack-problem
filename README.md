@@ -15,11 +15,11 @@
 
 > ### **Table of Content**
 >  1. [Introduzione al problema](#introduzione-al-problema)
->  1. [Programmazione dinamica](#programmazione-dinamica)
->      - [Esempio](#esempio)
->      - [Implementazione](#implementazione)
 >  1. [Branch and bound](#branch-and-bound)
 >      - [CPLEX Optimizer](#cplex-optimizer)
+>      - [Esempio](#esempio)
+>      - [Implementazione](#implementazione)
+>  1. [Programmazione dinamica](#programmazione-dinamica)
 >      - [Esempio](#esempio)
 >      - [Implementazione](#implementazione)
 >  1. [Shortest (Longest) Path Problem](#shortest-longest-path-problem)
@@ -29,16 +29,19 @@
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
-```
+```c
 REPOSITORY STRUCTURE
 ·
 │
 │ FOLDERS
-├── source          //codice sorgente
+├── source      //codice sorgente
 │   └── main.py
+|
+├── images      //images for the readme
+│   └── ...
 │
 │ FILES
-├── README.md
+├── README.md   //relazione e documentazione
 └── .gitignore
 ```
 
@@ -48,13 +51,13 @@ REPOSITORY STRUCTURE
 ## **Introduzione al problema**
 Il *Problema dello Zaino* (o *Knapsack Problem*, *KP*) è un problema di ottimizzazione combinatoria che consiste nel trovare il modo più efficiente di riempire uno zaino con oggetti di vario peso e valore. Il problema è di tipo NP-hard, ovvero non esiste un algoritmo polinomiale che lo risolva in tempo polinomiale, ma esistono algoritmi che lo risolvono in tempo pseudo-polinomiale.
 
-Il problema è formulato come segue: dato uno zaino di capacità $W$ e una serie $N$ di oggetti, ognuno caratterizzato da un peso $w$ e un valore $v$, trovare il modo di riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino.
+Il problema è formulato come segue: dato uno zaino di **capacità** $W$ e una serie di $N$ **oggetti**, ognuno caratterizzato da un **peso** $w$ e un **valore** $v$, trovare il modo di **riempire lo zaino in modo da massimizzare il valore totale degli oggetti inseriti, rispettando la capacità dello zaino**.
 
-La funzione obiettivo da massimizzare è la seguente:
+La **funzione obiettivo** da **massimizzare** è la seguente:
 $$Z = \sum_{i=1}^{n} v_i \cdot x_i$$
 $x_i$ è la variabile decisionale che indica se l'oggetto $i$ è stato inserito nello zaino o meno.
 
-Il vincolo da rispettare invece è:
+Il **vincolo** da rispettare invece è:
 $$\sum_{i=1}^{n} w_i \cdot x_i \leq W$$
 
 In base al tipo di variabile decisionale $x_i$ si possono avere tre tipi di KP:
@@ -62,7 +65,7 @@ In base al tipo di variabile decisionale $x_i$ si possono avere tre tipi di KP:
 - **Bounded Knapsack Problem**: $x_i \in \{0, 1, ..., b_i\}$
 - **Unbounded Knapsack Problem**: $x_i \in \mathbb{N}$
 
-**Nel nostro caso abbiamo trattato il KP come un 0-1 KP.**
+**Nel progetto abbiamo trattato la tipologia 0-1 Knapsack Problem.**
 
 Il problema viene trattato con tre diversi approcci:
 - **Branch & Bound**: viene utilizzato CPLEX per risolvere il problema con un algoritmo di B&B
@@ -73,16 +76,102 @@ Il problema viene trattato con tre diversi approcci:
 <br>
 <br>
 
+## **Branch and Bound**
+Il Branch and Bound è un paradigma di progettazione algoritmica utilizzato per risolvere problemi di ottimizzazione combinatoria. Questo approccio esplora tutte le possibili permutazioni tenendo conto dei vincoli, rendendolo più efficace rispetto ad altri approcci. Utilizzando **limiti (*bounds*)** e il **taglio (*pruning*)** delle soluzioni non fattibili, l'algoritmo ricerca in modo efficiente la soluzione ottimale.
+
+Nel contesto del Knapsack Problem, l'algoritmo sfrutta una strategia di esplorazione ad albero per generare tutte le possibili combinazioni degli oggetti da mettere nello zaino. Durante la ricerca, vengono calcolati limiti superiori e inferiori per ogni nodo dell'albero, al fine di determinare quali rami dell'albero possono essere potati (tagliati) senza influire sulla ricerca della soluzione ottimale.
+
+Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale del problema. Successivamente, genera i figli di questo nodo considerando le possibili scelte degli oggetti da mettere nello zaino. Calcola i limiti superiori e inferiori per ogni figlio e ordina i figli in base a questi limiti. Successivamente, l'algoritmo seleziona il figlio con il limite superiore più alto e lo esamina ulteriormente, generando i suoi figli e calcolando nuovi limiti. Questo processo continua fino a quando non vengono esplorate tutte le possibili combinazioni o fino a quando non viene trovata una soluzione ottimale.
+
+L'utilizzo del Branch and Bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
+
+### **CPLEX Optimizer**
+IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
+
+Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
+
+CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
+
+### **Esempio**
+> Di seguito un Knapsack Problem di esempio risolto con Branch and Bound:
+>
+> ![example](./images/bebExample.jpg)
+
+
+
+### **Implementazione**
+Per implementare il problema abbiamo utilizzato la libreria *docplex* per poter utilizzare CPLEX tramite python.
+
+Come passo di preprocessing, il vettore degli oggetti è stato ordinato secondo il ratio tra valore e peso in modo da poter avere il miglior risultato possibile, il ratio viene anche usato per impostare l'upper bound secondo la formula:
+
+$$Ub = v + (W-w)*(v_{i+1}/w_{i+1})$$
+
+Come primo passo viene creato un oggetto `Model` fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
+
+<details>
+<summary> Codice </summary>
+```python
+# create model
+model = Model(name='knapsack')
+```
+</details>
+
+Vengono create le variabili corrispondenti agli oggetti utilizzando il metodo `.binary_var_list()` del modello. Sono variabili binarie, il che significa che possono assumere solo valori 0 o 1.
+
+<details>
+<summary> Codice </summary>
+```python
+# create variables
+x = model.binary_var_list(len(items), name='x')
+```
+</details>
+
+Viene impostata la funzione obiettivo utilizzando il metodo `.maximize()` del modello. La funzione obiettivo cerca di massimizzare il valore totale degli oggetti nello zaino, il quale viene calcolato facendo la somma della moltiplicazione tra ogni variabile binaria e il valore dell'oggetto corrispondente.  
+I vincoli vengono creati utilizzando il metodo `.add_constraint()`. Il vincolo impone che il peso totale degli oggetti nello zaino non superi la capacità massima del contenitore. Viene calcolato il peso totale moltiplicando il peso di ogni oggetto per la corrispondente variabile "x" e sommando i risultati. Il risultato totale deve essere inferiore o uguale alla capacità.
+
+<details>
+<summary> Codice </summary>
+```python
+# create objective function
+model.maximize(model.sum([items[i].value * x[i] for i in range(len(items))]))
+# create constraints
+model.add_constraint(model.sum([items[i].weight * x[i] for i in range(len(items))]) <= capacity)
+```
+</details>
+
+Viene impostata come strategia il Branch and Bound utilizzando `.set()` sull'oggetto `mip.strategy.branch`, il quale indicherà a CPLEX quale metodo usare durante la risoluzione del problema.
+
+<details>
+<summary> Codice </summary>
+```python
+# set branch and bound strategy
+model.parameters.mip.strategy.branch.set(1)
+```
+</details>
+
+Infine con `.solve()` si risolve il problema tramite il modello.
+
+<details>
+<summary> Codice </summary>
+```python
+# solve model
+sol = model.solve()
+```
+</details>
+
+<br>
+<br>
+
 ## **Programmazione dinamica**
 
-Questa tecnica si basa sull'idea di suddividere il problema in sottoproblemi più piccoli, risolverli separatamente e combinare le loro soluzioni per ottenere la soluzione globale;
-nel contesto del problema dello zaino, può essere utilizzata per risolvere la variante del problema in cui gli oggetti possono essere inclusi nello zaino solo una volta (0-1 knapsack problem).
+Questa tecnica si basa sull'idea di **suddividere il problema in sottoproblemi più piccoli**, risolverli separatamente e combinare le loro soluzioni per ottenere la soluzione globale.
+Nel contesto del problema dello zaino, può essere utilizzata per risolvere la variante del problema **0-1 KP**.
 
-L'approccio della programmazione dinamica per risolvere il problema dello zaino coinvolge la creazione di una tabella, in cui le righe rappresentano gli oggetti disponibili e le colonne rappresentano i pesi possibili dello zaino. Ogni cella della tabella conterrà il valore massimo ottenibile considerando solo gli oggetti fino alla riga corrispondente e un peso massimo fino alla colonna corrispondente.
+L'approccio PD per risolvere il problema dello zaino coinvolge la creazione di una tabella, in cui **le righe rappresentano gli oggetti disponibili** e **le colonne rappresentano i pesi possibili dello zaino**. Ogni cella della tabella conterrà il valore massimo ottenibile considerando solo gli oggetti fino alla riga corrispondente e un peso massimo fino alla colonna corrispondente.
 
 Il riempimento della tabella avviene in modo iterativo, calcolando i valori massimi per ogni cella sulla base dei valori precedentemente calcolati. Per ogni oggetto, si confronta il valore di includerlo nello zaino con il valore di escluderlo. Se includere l'oggetto porta a un valore complessivo maggiore, viene calcolato il valore massimo combinando l'oggetto con il valore ottenuto dai pesi rimanenti. Altrimenti, si copia il valore massimo della riga precedente.
 
-Alla fine del processo, la cella nell'angolo in basso a destra conterrà il valore massimo ottenibile. Inoltre, tracciando un percorso all'indietro attraverso la tabella, è possibile determinare quali oggetti sono stati inclusi nello zaino per ottenere il valore massimo.
+Alla fine del processo, **la cella nell'angolo in basso a destra conterrà il valore massimo ottenibile**. Inoltre, **tracciando un percorso all'indietro attraverso la tabella, è possibile determinare quali oggetti sono stati inclusi nello zaino** per ottenere il valore massimo.
 
 La formulazione matematica della matrice $V[i,j]$, dati i vettori del peso $w$ e del valore $v$ è:
 
@@ -95,9 +184,9 @@ V[i,j] =
     \end{cases}
 $$
 ### **Esempio**
-Sotto si può vedere un esempio del procedimento della creazione della tabella:
-
-![example](./images/Knapsack_problem_dynamic_programming.gif)
+> Di seguito è riportato un esempio di esecuzione dell'algoritmo con un problema di esempio:
+>
+> ![example](./images/Knapsack_problem_dynamic_programming.gif)
 
 
 
@@ -133,7 +222,7 @@ Adesso si costruisce la tabella con la quale si risolve il problema vero e propr
 ```
 </details>
 
-Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacity```, si ripercorre la tabella al contrario per realizzare il vettore della soluzione, controllando se  un certo punto della tabella è diverso dal suo predecessore nella stessa riga, allora quell'oggetto sarà selezionato e il suo peso sarà sottratto da ```j```.
+Infine, dopo aver dichiaato le due variabili ausiliarie `i=n` e `j=capacity`, si ripercorre la tabella al contrario per realizzare il vettore della soluzione, controllando se  un certo punto della tabella è diverso dal suo predecessore nella stessa riga, allora quell'oggetto sarà selezionato e il suo peso sarà sottratto da `j`.
 
 <details>
 <summary> Codice </summary>
@@ -154,92 +243,12 @@ Infine, dopo aver dichiaato le due variabili ausiliarie ```i=n``` e ```j=capacit
 <br>
 <br>
 
-## **Branch and bound**
-Il branch and bound è un paradigma di progettazione algoritmica utilizzato per risolvere problemi di ottimizzazione combinatoria. Questo approccio esplora tutte le possibili permutazioni tenendo conto dei vincoli, rendendolo più efficace rispetto ad altri approcci. Utilizzando limiti (bounds) e il taglio (pruning) delle soluzioni non fattibili, l'algoritmo ricerca in modo efficiente la soluzione ottimale.
-
-Nel contesto del problema dello zaino (knapsack problem), l'algoritmo sfrutta una strategia di esplorazione ad albero per generare tutte le possibili combinazioni degli oggetti da mettere nello zaino. Durante la ricerca, vengono calcolati limiti superiori e inferiori per ogni nodo dell'albero, al fine di determinare quali rami dell'albero possono essere potati (tagliati) senza influire sulla ricerca della soluzione ottimale.
-
-Inizialmente, l'algoritmo crea un nodo radice rappresentante lo stato iniziale del problema. Successivamente, genera i figli di questo nodo considerando le possibili scelte degli oggetti da mettere nello zaino. Calcola i limiti superiori e inferiori per ogni figlio e ordina i figli in base a questi limiti. Successivamente, l'algoritmo seleziona il figlio con il limite superiore più alto e lo esamina ulteriormente, generando i suoi figli e calcolando nuovi limiti. Questo processo continua fino a quando non vengono esplorate tutte le possibili combinazioni o fino a quando non viene trovata una soluzione ottimale.
-
-L'utilizzo del branch and bound nel problema dello zaino permette di ridurre lo spazio di ricerca e di evitare l'esplorazione di soluzioni che sono sicuramente peggiori delle soluzioni già trovate. In questo modo, l'algoritmo riesce a trovare la soluzione ottimale in modo più efficiente rispetto ad altri approcci.
-
-### **CPLEX Optimizer**
-IBM CPLEX Optimizer è un potente strumento di ottimizzazione matematica utilizzato per risolvere problemi di programmazione matematica complessi, che offre una vasta gamma di funzionalità e algoritmi avanzati per la risoluzione di problemi di ottimizzazione lineare, non lineare, intera mista e con vincoli.
-
-Tramite CPLEX gli utenti possono formulare i propri problemi di ottimizzazione utilizzando una linguaggio di modellazione ad alto livello come OPL (Optimization Programming Language) o API (Application Programming Interface) in diversi linguaggi di programmazione come C++, Java e Python.
-
-CPLEX Optimizer implementa una vasta gamma di algoritmi di ottimizzazione, compresi metodi di programmazione lineare, branch and bound, taglio di piani, decomposizione Lagrangiana, metodi di punto interno e altro ancora. Questi algoritmi sono progettati per trovare soluzioni ottimali o soluzioni di alta qualità in modo efficiente, utilizzando tecniche di pruning e euristiche intelligenti per ridurre lo spazio di ricerca e accelerare il processo di risoluzione.
-
-### **Esempio**
-L'aspetto di un albero per la risoluzione del problema di knapsack tramite Branch and bound dovrebbe essere simile a questo:
-<br>
-<br>
-<br>
-![example](./images/bebExample.jpg)
-
-
-
-### **Implementazione**
-Per implementare il problema abbiamo utilizzato la libreria *Docplex* per poter sfruttare l'efficenza di CPLEX anche tramite python.
-
-Come passo di preprocessing il vettore degli oggettti è stato ordinato secondo il ratio di valore e peso per poter avere il miglior risultato possibile, il ratio viene anche usato per impostare l'Upper bound secondo la formula:
-
-$$Ub = v + (W-w)*(v_{i+1}/w_{i+1})$$
-
-<br>
-<br>
-Come primo passo viene creato un oggetto modello chiamato "model" utilizzando il costruttore "Model" fornito da CPLEX. Questo modello rappresenta il problema dello zaino che deve essere risolto.
-
-```python
-# create model
-model = Model(name='knapsack')
-```
-
-Vengono creati gli oggetti variabili utilizzando il metodo "binary_var_list" del modello. Queste variabili, indicate con il nome "x", rappresentano le scelte degli oggetti da mettere nello zaino. Sono variabili binarie, il che significa che possono assumere solo valori 0 o 1.
-
-```python
-# create variables
-x = model.binary_var_list(len(items), name='x')
-```
-
-Viene definita la funzione obiettivo utilizzando il metodo "maximize" del modello. La funzione obiettivo cerca di massimizzare il valore totale degli oggetti nello zaino. Viene calcolato il valore totale moltiplicando il valore di ogni oggetto per la corrispondente variabile "x" e sommando i risultati.
-
-```python
-# create objective function
-model.maximize(model.sum([items[i].value * x[i] for i in range(len(items))]))
-```
-
-Vengono creati i vincoli utilizzando il metodo "add_constraint" del modello. Il vincolo impone che il peso totale degli oggetti nello zaino non superi la capacità massima del contenitore. Viene calcolato il peso totale moltiplicando il peso di ogni oggetto per la corrispondente variabile "x" e sommando i risultati. Il risultato totale deve essere inferiore o uguale alla capacità.
-
-```python
-# create constraints
-model.add_constraint(model.sum([items[i].weight * x[i] for i in range(len(items))]) <= capacity)
-```
-
-Viene impostata come strategia il Branch and bound utilizzando "set" sull'oggetto "mip.strategy.branch" indicherà a CPLEX di quale metodo usare durante la risoluzione del problema.
-
-```python
-# set branch and bound strategy
-model.parameters.mip.strategy.branch.set(1)
-```
-
-Infine viene risolto il modello utilizzando il metodo "solve". Questo avvia l'algoritmo di ottimizzazione di CPLEX per trovare la soluzione ottimale del problema dello zaino. La soluzione ottimale viene restituita insieme all'oggetto modello.
-
-```python
-# solve model
-sol = model.solve()
-# return solution
-return sol, model
-```
-
-<br>
-<br>
-
 ## **Shortest (Longest) Path Problem**
 Il problema del cammino minimo consiste nel trovare il cammino di costo minimo tra due nodi di un grafo pesato. Il problema può essere *"ribaltato"* per trovare il cammino di costo massimo tra due nodi di un grafo pesato andando a cambiare il segno dei costi degli archi.
 
-Il Knapsack Problem può essere modellato come un problema di cammino massimo su un grafo pesato.  
-Il grafo è composto da $N \cdot (W+1) + 2$ nodi, dove $N$ è il numero di oggetti e $W$ è la capacità dello zaino, mentre i due nodi aggiuntivi corrispondono al nodo *source* e al nodo *target*.  
+**Il Knapsack Problem può essere modellato come un problema di cammino massimo su un grafo pesato.**
+
+Il grafo è composto da $N \cdot (W+1) + 2$ nodi, dove $N$ **è il numero di oggetti** e $W$ **è la capacità dello zaino**, mentre i due nodi aggiuntivi corrispondono al nodo ***source*** e al nodo ***target***.  
 Per ogni oggetto $x$ ci sono $W+1$ nodi, uno per ogni possibile peso attualmente presente nello zaino, quindi definiamo il nodo $x_i$ come il nodo corrispondente all'oggetto $x$ ($0 \le x < N$) quando stiamo occupando $i$ all'interno dello zaino, $0 \le i \le W$.  
 Ogni nodo $x_i$ (ed il nodo source $s_0$) è collegato:
 - al nodo $(x+1)_i$ con un arco di peso $0$
@@ -348,12 +357,13 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 
 ### **Esempio**
 
-> Esempio: prendiamo in considerazione il seguente KP
+> Prendiamo in considerazione il seguente KP
+>
+> $W = 5$
 > | $x$ | 0   | 1   | 2   | 3   |
 > |:---:| --- | --- | --- | --- |
 > | $v$ | 40  | 15  | 20  | 10  |
 > | $w$ | 4   | 2   | 3   | 1   |
-> $W = 5$
 >
 > Il grafo costruito sarà il seguente:
 > ![graph](./images/graph_example.png)
@@ -370,11 +380,13 @@ Come ultima cosa vengono selezionati gli oggetti che vengono inseriti nello zain
 ## **Risultati**
 
 Prendiamo in considerazione il seguente KP:
+
+$W = 12$
 | $x$ | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   |
 |:---:| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | $v$ | 2   | 10  | 5   | 4   | 2   | 7   | 10  | 10  | 8   | 1   |
 | $w$ | 8   | 9   | 5   | 8   | 3   | 1   | 8   | 1   | 9   | 6   |
-$W = 12$
+
 
 Questo è uno dei casi in cui i vari metodi di risoluzione non trovano tutti la stessa soluzione, pur assicurando tutti la soluzione ottima.
 
