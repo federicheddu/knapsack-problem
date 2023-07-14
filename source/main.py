@@ -266,6 +266,40 @@ def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = 
 
     return -fobj[len(fobj)-1], sel, rc, t
 
+def cerca_large_scale(categoria):
+    cartella = os.path.join(os.getcwd(), ("large_scale\\" + categoria))
+    elenco_file = os.listdir(cartella)
+    matrice_items = np.empty((3, int(categoria)), dtype=object)  # Utilizza dtype=object per creare una matrice di oggetti
+    peso_massimo = []
+    valore_massimo = []
+    i = 0
+    for file in elenco_file:
+        percorso_file = os.path.join(cartella, file)
+        aux = []
+        if os.path.isfile(percorso_file):
+            dati = np.loadtxt(percorso_file, usecols=(0, 1), unpack=True)
+
+            num_elementi = int(dati[0][0])
+            peso_massimo.append(int(dati[1][0]))
+            valore_massimo.append(int(dati[0][1]))
+
+            for value, weight in zip(dati[0][1:num_elementi + 1], dati[1][1:num_elementi + 1]):
+                item = Item(int(value), int(weight))
+                aux.append(item)
+        matrice_items[i] = aux
+        i += 1
+
+    cartella = os.path.join(os.getcwd(), "large_scale-optimum\\" + categoria)
+    elenco_file = os.listdir(cartella)
+    choice_vector = []
+    for file in elenco_file:
+        percorso_file = os.path.join(cartella, file)
+        if os.path.isfile(percorso_file):
+            dati = np.loadtxt(percorso_file, dtype=int)
+            choice_vector.append(dati)
+
+    return matrice_items, peso_massimo, valore_massimo, np.array(choice_vector)
+
 
 if __name__ == '__main__':
     # generate random items
