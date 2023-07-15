@@ -283,7 +283,7 @@ def cerca_large_scale(categoria):
             peso_massimo.append(int(dati[1][0]))
             valore_massimo.append(int(dati[0][1]))
 
-            for value, weight in zip(dati[0][1:num_elementi + 1], dati[1][1:num_elementi + 1]):
+            for value, weight in zip(dati[0][2:num_elementi + 2], dati[1][2:num_elementi + 2]):
                 item = Item(int(value), int(weight))
                 aux.append(item)
         matrice_items[i] = aux
