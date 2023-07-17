@@ -241,7 +241,7 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
 
 # plot the graph using pyvis
 def graph_plot(g: nx.DiGraph):
-    gv = Network(notebook=False, directed=True, filter_menu=True)
+    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
     gv.toggle_physics(False)
     gv.from_nx(g)
     gv.show('graph.html')
