@@ -5,6 +5,8 @@ from typing import List
 from collections import defaultdict
 from pyvis.network import Network
 import networkx as nx
+import os
+import numpy as np
 
 class Item:
     def __init__(self, value: int, weight: int):
@@ -42,10 +44,11 @@ def do_some_tests():
 # print items
 def print_solution(fobj, sel, rc, time):
     print(f'Profit = {fobj}, Residual capacity = {rc}')
+    """
     for i in range(len(sel)):
         if sel[i] == 1:
             print(f'x[{i}] = {sel[i]}')
-
+    """
     print(f'Time = {time}')
 
 
@@ -238,14 +241,14 @@ def shortest_path_dag(g: nx.DiGraph, s: int):
 
 # plot the graph using pyvis
 def graph_plot(g: nx.DiGraph):
-    gv = Network(width='100%', height='100%', notebook=False, directed=True, filter_menu=True)
+    gv = Network(notebook=False, directed=True, filter_menu=True)
     gv.toggle_physics(False)
     gv.from_nx(g)
     gv.show('graph.html')
 
 
 # solve the knapsack problem using shortest (longest) path in a DAG
-def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = True):
+def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = False):
     
     t = time.time()
     # create graph
@@ -300,18 +303,33 @@ def cerca_large_scale(categoria):
 
     return matrice_items, peso_massimo, valore_massimo, np.array(choice_vector)
 
+def calculate_weight(items, binary_vector):
+    total_weight = 0
+    for i in range(len(binary_vector)):
+        if binary_vector[i] == 1:
+            total_weight += items[i].weight
+    return total_weight
+
+
+
 
 if __name__ == '__main__':
+    items_matrix, vettore_maxW, vettore_TopV, matrice_scelti = cerca_large_scale("10000")
+    scelta = 0  #per scegliere quale esempio usare  dai vettori/matrici di sopra
+    
     # generate random items
-    items = random_vector(1, 10, 10)
+    #items = random_vector(1, 10, 10)
     #items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
+    items = items_matrix[scelta]
     # set max weight
     #capacity = 6
-    capacity = random.randint(6, 15)
-
+    #capacity = random.randint(6, 15)
+    capacity = vettore_maxW[scelta]
+    """
     print('\nList of items:')
     for it in range(len(items)):
         print(f'Itm[{it}]:\t value {items[it].value}\t weight {items[it].weight}')
+    """
     print(f'Capacity: {capacity}')
 
     print('\n========================================\n')
@@ -346,6 +364,21 @@ if __name__ == '__main__':
 
     print('\n========================================\n')
 
-    print('\n\nDo some tests')
-    do_some_tests()
+    # check if the solutions are the same
+    same = check_solution(matrice_scelti[scelta], sel_sp)
+    print(f'The Dataset and Shortest Path give the same solution: {same} \n')
+    same = check_solution(matrice_scelti[scelta], sel_bb)
+    print(f'The Dataset and Branch and Bound with CPLEX give the same solution: {same} \n')
+    same = check_solution(matrice_scelti[scelta], sel_pd)
+    print(f'The Dataset and Dynamic Programming give the same solution: {same} \n')
+
+    datasetW = calculate_weight(items, matrice_scelti[scelta])
+    print(f'Profit = {vettore_TopV[scelta]}, Residual capacity = {capacity-datasetW}')
+    
+
+
+    print('\n========================================\n')
+
+    #print('\n\nDo some tests')
+    #do_some_tests()
     print('\n\n')
