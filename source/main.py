@@ -6,7 +6,9 @@ from collections import defaultdict
 from pyvis.network import Network
 import networkx as nx
 import os
-import numpy as np
+
+
+## === ITEM DEFINITION AND GENERAL FUNCTIONS ================================================================================ ##
 
 class Item:
     def __init__(self, value: int, weight: int):
@@ -14,43 +16,31 @@ class Item:
         self.weight = weight
         self.ratio = value / weight
 
-
 # generate random vector of items
-def random_vector(min_value, max_value, size):
+def random_items(min_value, max_value, size):
     return [Item(random.randint(min_value, max_value), random.randint(min_value, max_value)) for _ in range(size)]
 
 
-# do some test with increasing number of items
-def do_some_tests():
-    capacity = random.randint(6, 20)
-    sizes = [10, 50, 100, 500, 1000]
-    for num in sizes:
-        items = random_vector(1, 30, num)
-        items.sort(key=lambda x: x.ratio, reverse=True)
+# check if the solutions are the same
+def check_solution(sel1, sel2):
+    same = True
+    for idx in range(len(sel1)):
+        if sel1[idx] != sel2[idx] and same:
+            same = False
 
-        fobj_bb, sel_bb, rc_bb, t_bb = solve_with_knapsack_cplex(items, capacity)
-        fobj_pd, sel_pd, rc_pd, t_pd = solve_with_knapsack_dynamic(items, capacity)
-        fobj_sp, sel_sp, rc_sp, t_sp = solve_with_shortest_path_dag(items, capacity, False)
-        same = check_solution(sel_bb, sel_pd)
-        same = check_solution(sel_bb, sel_sp) and same
-        print(f'\nNumber of items: {num}')
-        print(f'Capacity: {capacity}')
-        print(f'FObj BB: {fobj_bb}, Time BB: {t_bb}')
-        print(f'FObj PD: {fobj_pd}, Time PD: {t_pd}')
-        print(f'FObj SP: {fobj_sp}, Time SP: {t_sp}')
-        print(f'Same solution: {same}')
+    return same
 
 
 # print items
 def print_solution(fobj, sel, rc, time):
     print(f'Profit = {fobj}, Residual capacity = {rc}')
-    """
     for i in range(len(sel)):
         if sel[i] == 1:
             print(f'x[{i}] = {sel[i]}')
-    """
     print(f'Time = {time}')
 
+
+## === BRANCH AND BOUND ===================================================================================================== ##
 
 # solve knapsack problem using cplex
 def knapsack_cplex(items: List[Item], capacity: int):
@@ -98,6 +88,8 @@ def solve_with_knapsack_cplex(items: List[Item], capacity: int):
     return fobj, sel, rc, t
 
 
+## === DYNAMIC PROGRAMMING ================================================================================================== ##
+
 # solve knapsack problem using branch and bound
 def knapsack_dynamic(items: List[Item], capacity: int):
     n = len(items)
@@ -124,7 +116,7 @@ def knapsack_dynamic(items: List[Item], capacity: int):
 
     return table[n][capacity], selected, j
 
-
+# solver
 def solve_with_knapsack_dynamic(items: List[Item], capacity: int):
     t = time.time()
     fobj, sel, rc = knapsack_dynamic(items, capacity)
@@ -133,15 +125,7 @@ def solve_with_knapsack_dynamic(items: List[Item], capacity: int):
     return fobj, sel, rc, t
 
 
-# check if the solutions are the same
-def check_solution(sel1, sel2):
-    same = True
-    for idx in range(len(sel1)):
-        if sel1[idx] != sel2[idx] and same:
-            same = False
-
-    return same
-
+## === SHORTEST PATH ======================================================================================================== ##
 
 # from vector to networkx graph
 def vector_to_nx(items: List[Item], capacity: int):
@@ -248,7 +232,7 @@ def graph_plot(g: nx.DiGraph):
 
 
 # solve the knapsack problem using shortest (longest) path in a DAG
-def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = False):
+def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = True):
     
     t = time.time()
     # create graph
@@ -269,67 +253,45 @@ def solve_with_shortest_path_dag(items: List[Item], capacity: int, plot: bool = 
 
     return -fobj[len(fobj)-1], sel, rc, t
 
-def cerca_large_scale(categoria):
-    cartella = os.path.join(os.getcwd(), ("large_scale\\" + categoria))
-    elenco_file = os.listdir(cartella)
-    matrice_items = np.empty((3, int(categoria)), dtype=object)  # Utilizza dtype=object per creare una matrice di oggetti
-    peso_massimo = []
-    valore_massimo = []
-    i = 0
-    for file in elenco_file:
-        percorso_file = os.path.join(cartella, file)
-        aux = []
-        if os.path.isfile(percorso_file):
-            dati = np.loadtxt(percorso_file, usecols=(0, 1), unpack=True)
 
-            num_elementi = int(dati[0][0])
-            peso_massimo.append(int(dati[1][0]))
-            valore_massimo.append(int(dati[0][1]))
+## === TESTS ================================================================================================================ ##
 
-            for value, weight in zip(dati[0][2:num_elementi + 2], dati[1][2:num_elementi + 2]):
-                item = Item(int(value), int(weight))
-                aux.append(item)
-        matrice_items[i] = aux
-        i += 1
+# do some test with increasing number of items
+def do_some_tests():
+    capacity = random.randint(6, 20)
+    sizes = [10, 50, 100, 500, 1000]
 
-    cartella = os.path.join(os.getcwd(), "large_scale-optimum\\" + categoria)
-    elenco_file = os.listdir(cartella)
-    choice_vector = []
-    for file in elenco_file:
-        percorso_file = os.path.join(cartella, file)
-        if os.path.isfile(percorso_file):
-            dati = np.loadtxt(percorso_file, dtype=int)
-            choice_vector.append(dati)
+    for num in sizes:
+        items = random_items(1, 30, num)
+        items.sort(key=lambda x: x.ratio, reverse=True)
 
-    return matrice_items, peso_massimo, valore_massimo, np.array(choice_vector)
+        fobj_bb, sel_bb, rc_bb, t_bb = solve_with_knapsack_cplex(items, capacity)
+        fobj_pd, sel_pd, rc_pd, t_pd = solve_with_knapsack_dynamic(items, capacity)
+        fobj_sp, sel_sp, rc_sp, t_sp = solve_with_shortest_path_dag(items, capacity, False)
+        same = check_solution(sel_bb, sel_pd)
+        same = check_solution(sel_bb, sel_sp) and same
 
-def calculate_weight(items, binary_vector):
-    total_weight = 0
-    for i in range(len(binary_vector)):
-        if binary_vector[i] == 1:
-            total_weight += items[i].weight
-    return total_weight
+        print(f'\nNumber of items: {num}')
+        print(f'Capacity: {capacity}')
+        print(f'| Algorithm | Objective Function | Remaining Capacity | Time           |')
+        print(f'| :-------: | :----------------: | :----------------: | :------------: |')
+        print(f'| BB        | {fobj_bb}              | {rc_bb}                | {t_bb}   |')
+        print(f'| PD        | {fobj_pd}              | {rc_pd}                | {t_pd}   |')
+        print(f'| SP        | {fobj_sp}              | {rc_sp}                | {t_sp}   |')
+        print(f'Same solution: {same}')
 
 
+# solve the knapsack problem using all algorithms
+def single_test(items: List[Item] = None, capacity: int = None):
 
+    # if no items are given, generate random items
+    if not items:
+        items = random_items(1, 10, 10)
+        capacity = random.randint(6, 15)
 
-if __name__ == '__main__':
-    items_matrix, vettore_maxW, vettore_TopV, matrice_scelti = cerca_large_scale("10000")
-    scelta = 0  #per scegliere quale esempio usare  dai vettori/matrici di sopra
-    
-    # generate random items
-    #items = random_vector(1, 10, 10)
-    #items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
-    items = items_matrix[scelta]
-    # set max weight
-    #capacity = 6
-    #capacity = random.randint(6, 15)
-    capacity = vettore_maxW[scelta]
-    """
     print('\nList of items:')
     for it in range(len(items)):
         print(f'Itm[{it}]:\t value {items[it].value}\t weight {items[it].weight}')
-    """
     print(f'Capacity: {capacity}')
 
     print('\n========================================\n')
@@ -364,21 +326,131 @@ if __name__ == '__main__':
 
     print('\n========================================\n')
 
-    # check if the solutions are the same
-    same = check_solution(matrice_scelti[scelta], sel_sp)
-    print(f'The Dataset and Shortest Path give the same solution: {same} \n')
-    same = check_solution(matrice_scelti[scelta], sel_bb)
-    print(f'The Dataset and Branch and Bound with CPLEX give the same solution: {same} \n')
-    same = check_solution(matrice_scelti[scelta], sel_pd)
-    print(f'The Dataset and Dynamic Programming give the same solution: {same} \n')
 
-    datasetW = calculate_weight(items, matrice_scelti[scelta])
-    print(f'Profit = {vettore_TopV[scelta]}, Residual capacity = {capacity-datasetW}')
+## === DATASET FUNCTIONS ==================================================================================================== ##
+
+# read a dataset from a file
+def read_dataset(file_name):
+    # open file
+    f = open(file_name, 'r')
+
+    # read first line (num of items and capacity)
+    line = f.readline()
+    line = line.split()
+    num_items = int(line[0])
+    capacity = int(line[1])
     
+    # read optimum
+    line = f.readline()
+    line = line.split()
+    optimum = int(line[0])
+
+    # read items
+    items = []
+    for line in f:
+        line = line.split()
+        items.append(Item(int(line[0]), int(line[1])))
+
+    # close file
+    f.close()
+
+    return items, capacity, optimum
 
 
-    print('\n========================================\n')
+# read solution from a file
+def read_solution(file_name):
+    # open file
+    f = open(file_name, 'r')
 
-    #print('\n\nDo some tests')
-    #do_some_tests()
-    print('\n\n')
+    # read array from first line
+    line = f.readline()
+    line = line.split()
+    sel = [int(x) for x in line]
+
+    return sel
+
+
+# test a single dataset with all agorithms and print the results as markdown table
+def single_dataset_test(dataset_file: str, solution_file: str):
+
+    # read the dataset
+    items, capacity, optimum = read_dataset(dataset_file)
+    # read the solution
+    sel = read_solution(solution_file)
+
+    # solve the problem using all algorithms
+    fobj_bb, sel_bb, rc_bb, t_bb = solve_with_knapsack_cplex(items, capacity)
+    fobj_pd, sel_pd, rc_pd, t_pd = solve_with_knapsack_dynamic(items, capacity)
+    fobj_sp, sel_sp, rc_sp, t_sp = solve_with_shortest_path_dag(items, capacity, False)
+
+    #same_bb = check_solution(sel, sel_bb)
+    same_pd = check_solution(sel, sel_pd)
+    same_sp = check_solution(sel, sel_sp)
+
+    # print the solution as markdown table
+    print(f'\n\nSolve the problem {dataset_file} with all algorithms - Optimum = {optimum}')
+    print(f'| Algorithm | Objective Function | Remaining Capacity | Time           | Optimum selection |')
+    print(f'| :-------: | :----------------: | :----------------: | :------------: | :-----: |')
+    #print(f'| BB        | {fobj_bb}              | {rc_bb}                | {t_bb}   | {same_bb} |')
+    print(f'| PD        | {fobj_pd}              | {rc_pd}                | {t_pd}   | {same_pd} |')
+    print(f'| SP        | {fobj_sp}              | {rc_sp}                | {t_sp}   | {same_sp} |')
+
+
+# test all the knapsack problem dataset
+def full_dataset_test():
+
+    # sizes of the datasets
+    sizes = [100, 200, 500, 1000, 2000, 5000, 10000]
+
+    # test all datasets sizes
+    for size in sizes:
+        # for all the three datasets (uncorr, weakly and strongly corr)
+        for idx in range(1, 4):
+            # get the file name
+            file_name = f'knapPI_{idx}_{size}_1000_1'
+            dataset_file = f'./large_scale/{size}/{file_name}'
+            solution_file = f'./large_scale-optimum/{size}/{file_name}'
+
+            single_dataset_test(dataset_file, solution_file)
+
+## === MAIN ================================================================================================================= ##
+
+if __name__ == '__main__':
+
+    # Tests to do
+    single_test_fixed = False      # single test of knapsack problem with fixed problem
+    single_test_random = False     # single test of knapsack problem with random problem
+    single_test_dataset = True     # single test of knapsack problem from given dataset
+    batch_test_random = False      # batch test of knapsack problem with random items and capacity
+    dataset_test = False           # test with the knapsack problem dataset
+
+    # solve the knapsack problem using all algorithms
+    if single_test_fixed:
+        print('\n\nSingle knapsack test:')
+        items = [Item(40, 4), Item(15, 2), Item(20, 3), Item(10, 1)]
+        capacity = 6
+        single_test(items, capacity)
+        print('\n\n')
+
+    # solve a random knapsack problem using all algorithms
+    if single_test_random:
+        print('\n\nSingle knapsack test:')
+        single_test()
+        print('\n\n')
+
+    # test with various sizes and random items
+    if batch_test_random:
+        print('\n\nRandom tests:')
+        do_some_tests()
+        print('\n\n')
+
+    # solve a knapsack problem imported from file using all algorithms
+    if single_test_dataset:
+        print('\n\nDataset test:')
+        single_dataset_test('large_scale/2000/knapPI_1_2000_1000_1', 'large_scale-optimum/2000/knapPI_1_2000_1000_1')
+        print('\n\n')
+        
+    # do large scale tests
+    if dataset_test:
+        print('\n\Full dataset tests:')
+        full_dataset_test()
