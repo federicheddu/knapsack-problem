@@ -25,6 +25,7 @@
 >      - [Implementazione](#implementazione)
 >      - [Esempio](#esempio)
 >  1. [Risultati](#risultati)
+>      - [Large scale dataset](#large-scale-dataset)
 >  1. [Requisiti, utilizzo ed output](#requisiti-utilizzo-ed-output)
 
 
@@ -406,7 +407,7 @@ I casi in cui i metodi trovano soluzioni diverse sono quelli in cui ci sono più
 Successivamente siamo andati ad effettuare dei test su un numero di oggetti crescente per vedere come si comportano i vari metodi. Per tutti i test abbiamo utilizzato un peso fissato.
 
 $W=18$
-| Numero oggetti  | BB    | PD    | SP    | BB (tempo)               | PD (tempo)                | SP (tempo)               | Stessa soluzione |
+| Numero oggetti  | BB V  | PD V  | SP V  | BB (tempo)               | PD (tempo)                | SP (tempo)               | Stessa soluzione |
 | --------------- | ----- | ----- | ----- | ------------------------ | ------------------------- | ------------------------ | ---------------- |
 | 10              | 44    | 44    | 44    | 0.009273052215576172     | 4.410743713378906e-05     | 0.0006861686706542969    | SI               |
 | 50              | 132   | 132   | 132   | 0.021244049072265625     | 0.00021195411682128906    | 0.0040531158447265625    | SI               |
@@ -420,6 +421,24 @@ Inoltre, come ci aspettavamo, il tempo di esecuzione cresce all'aumentare del nu
 > NOTE:
 > Il tempo di esecuzione è stato calcolato utilizzando la funzione `time()` della libreria `time` di Python, che restituisce il tempo in secondi con una precisione di 1 microsecondo. Per quanto riguarda il metodo SP, il tempo di esecuzione comprende anche il tempo di creazione del grafo.
 
+<br>
+
+### **Large scale dataset**
+Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset reperibile al link [[link]([https://www.ibm.com/it-it/products/ilog-cplex-optimization-studio](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/))], dove  vengono raggruppati varie dimensioni di problemi di kanpsack fino ad un massimo di 10000 elementi, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
+Rispetto alla tabella di sopra è stata aggiunta dopo il valore di ogni metodo anche la sua la capacità residua, poi la capacità poiché variava a seconda della dimensione come dettato dal dataset, e alla fine della tabella la sezione della "Stessa soluzione" indica se il metodo utilizzato ha avuto la stessa soluzione rispetto a quella del dataset. 
+
+<br>
+
+| Numero oggetti  | BB V   | PD V   | SP V   | BB r   | PD r   | SP r  | Capacità | BB (tempo)               | PD (tempo)                | SP (tempo)               | Stessa soluzione BB | Stessa soluzione PD | Stessa soluzione SP |
+| --------------- | ------ | ------ | ------ | ------ | ------ | ----- | -------- | ------------------------ | ------------------------- | ------------------------ | --------------------| --------------------| --------------------|
+| 2000            | 110625 | 110625 | 110625 | 0      | 0      | 0     | 10011    | 0.10803842544555664      | 10.728493928909302        | 310.9519999027252        | SI                  | SI                  | SI                  |
+| 10000           | 563634 | 563647 | X      | 1      | 0      | X     | 49877    | 0.192460298538208        | 282.13068103790283        | Out of memory            | NO                  | SI                  | X                   |
+
+<br>
+
+Abbiamo provato ad eseguire i test con il set da 10000 ma il metodo di risoluzione dello shortest path richiede cosi tante risorse che il computer su cui abbiamo eseguito i test ha terminato la memoria lasciandoci solo dei risultati parziali; il test con il maggior numero di elementi che siami riusciti a terminare è stato  quello con 2000 elementi (ATTENZIONE: richiede comunque la versione completa di CPLEX in quanto supera il limite delle 1000 variabili della versione comunity).
+
+Tanto più il numero di elementi aumenta tanto più aumenta il divario tra i metodi più efficaci rispetto a quelli meno efficaci: CPLEX con il Branch and bound è cosi rapido da non raggiunge mai il secondo a prescindere da quanti elementi utilizzi rendendolo il più rapido in assoluto, poi abbiamo la Programmazione dinamica che sebbene abbia avuto un tempo assai maggiore rispetto ad BB è stato l'unico (nel test con 10000 elementi) ad avere lo stesso risultato del datataset (nonché il più alto), infine abbiamo lo Shortest path, il quale anche dopo la rimozione della realizzazione grafica del grafo (la quale appesantiva tremendamente il processo) ha avuto sempre prestazioni inferiori fino a rendere impossibile la sua terminazione nei casi più complessi.
 <br>
 <br>
 
