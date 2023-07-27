@@ -128,35 +128,81 @@ def solve_with_knapsack_dynamic(items: List[Item], capacity: int):
 ## === SHORTEST PATH ======================================================================================================== ##
 
 # from vector to networkx graph
-def vector_to_nx(items: List[Item], capacity: int):
+def vector_to_nx(items: List[Item], capacity: int, save_memory: bool = False):
     g = nx.DiGraph(capacity=capacity, items=len(items))
 
     x_offset = 100
     y_offset = 40
 
-    # add all nodes
-    g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
-    for layer in range(len(items)):
-        for nd in range(1, capacity+2):
-            g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}', x=x_offset*(layer+1), y=y_offset*(nd-1))
-    g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
+    if not save_memory:
+        # add all nodes
+        g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
+        for layer in range(len(items)):
+            for nd in range(1, capacity+2):
+                g.add_node(layer*(capacity+1)+nd, group=layer+2, title=f'{layer*(capacity+1)+nd}', x=x_offset*(layer+1), y=y_offset*(nd-1))
+        g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
 
-    # starting edges
-    g.add_edge(0, 1, weight=0, title='0')
-    if items[0].weight <= capacity:
+        # starting edges
+        g.add_edge(0, 1, weight=0, title='0')
+        if items[0].weight <= capacity:
+            g.add_edge(0, items[0].weight+1, weight=-items[0].value, title=f'{items[0].value}')
+
+        # edges between items
+        # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
+        for layer in range(len(items)-1):
+            for nd in range(1, capacity+2):
+                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0, title='0')
+                if nd-1 + items[layer+1].weight <= capacity:
+                    g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer+1].value, title=f'{items[layer+1].value}')
+
+        # ending edges
+        for nd in range(1, capacity+2):
+            g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
+
+    else:
+
+        queue = []
+        target = len(items)*(capacity+1)+1
+        
+        # add source node
+        g.add_node(0, group=1, title=f'0', x=-x_offset/2, y=0)
+        # add target node
+        g.add_node(len(items)*(capacity+1)+1, group=len(items)+2, title=f'{len(items)*(capacity+1)+1}', x=x_offset*(len(items)+1.5), y=y_offset*capacity/2)
+        # add first nodes
+        g.add_node(1, group=2, title=f'1', x=x_offset, y=y_offset)
+        g.add_node(items[0].weight+1, group=2, title=f'{items[0].weight+1}', x=x_offset, y=y_offset*(items[0].weight))
+        # add first edges
+        g.add_edge(0, 1, weight=0, title='0')
         g.add_edge(0, items[0].weight+1, weight=-items[0].value, title=f'{items[0].value}')
+        # add the nodes to the queue
+        queue.append(1)
+        queue.append(items[0].weight+1)
 
-    # edges between items
-    # NOTE: layer*(capacity+1)+nd is the id of the item with the weight used in a graph
-    for layer in range(len(items)-1):
-        for nd in range(1, capacity+2):
-            g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd, weight=0, title='0')
-            if nd-1 + items[layer+1].weight <= capacity:
-                g.add_edge(layer*(capacity+1)+nd, (layer+1)*(capacity+1)+nd+items[layer+1].weight, weight=-items[layer+1].value, title=f'{items[layer+1].value}')
 
-    # ending edges
-    for nd in range(1, capacity+2):
-        g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
+        # until the queue is empty => until we have added all the necessary nodes => until we created the nodes of the last item
+        while queue:
+            node = queue.pop(0)
+            item = g.nodes[node]['group']-1
+
+            # adding node and edge for the 'do not take' option
+            new_node = node+capacity+1
+            g.add_node(new_node, group=item+2, title=f'{new_node}', x=g.nodes[node]['x']+x_offset, y=g.nodes[node]['y'])
+            g.add_edge(node, new_node, weight=0, title='0')
+            # if the node is not already in the queue and it is not corresponding to the last item
+            if new_node not in queue and item+1 < len(items)-1:
+                queue.append(new_node)
+            elif item+1 == len(items)-1:
+                g.add_edge(new_node, target, weight=0, title='0')
+
+            if (node-1) % (capacity+1) >= items[item+1].weight:
+                new_node = node+capacity+1+items[item+1].weight
+                g.add_node(new_node, group=g.nodes[node]['group']+1, title=f'{new_node}', x=g.nodes[node]['x']+x_offset, y=g.nodes[node]['y']+y_offset*items[item+1].weight)
+                g.add_edge(node, new_node, weight=-items[item+1].value, title=f'{items[item+1].value}')
+                # if the node is not already in the queue and it is not corresponding to the last item
+                if new_node not in queue and item+1 < len(items)-1:
+                    queue.append(new_node)
+                elif item+1 == len(items)-1:
+                    g.add_edge(new_node, target, weight=0, title='0')
 
     return g
 
@@ -383,7 +429,7 @@ def single_dataset_test(dataset_file: str, solution_file: str):
     fobj_pd, sel_pd, rc_pd, t_pd = solve_with_knapsack_dynamic(items, capacity)
     fobj_sp, sel_sp, rc_sp, t_sp = solve_with_shortest_path_dag(items, capacity, False)
 
-    #same_bb = check_solution(sel, sel_bb)
+    same_bb = check_solution(sel, sel_bb)
     same_pd = check_solution(sel, sel_pd)
     same_sp = check_solution(sel, sel_sp)
 
@@ -391,7 +437,7 @@ def single_dataset_test(dataset_file: str, solution_file: str):
     print(f'\n\nSolve the problem {dataset_file} with all algorithms - Optimum = {optimum}')
     print(f'| Algorithm | Objective Function | Remaining Capacity | Time           | Optimum selection |')
     print(f'| :-------: | :----------------: | :----------------: | :------------: | :-----: |')
-    #print(f'| BB        | {fobj_bb}              | {rc_bb}                | {t_bb}   | {same_bb} |')
+    print(f'| BB        | {fobj_bb}              | {rc_bb}                | {t_bb}   | {same_bb} |')
     print(f'| PD        | {fobj_pd}              | {rc_pd}                | {t_pd}   | {same_pd} |')
     print(f'| SP        | {fobj_sp}              | {rc_sp}                | {t_sp}   | {same_sp} |')
 
@@ -418,11 +464,11 @@ def full_dataset_test():
 if __name__ == '__main__':
 
     # Tests to do
-    single_test_fixed = False      # single test of knapsack problem with fixed problem
+    single_test_fixed = False       # single test of knapsack problem with fixed problem
     single_test_random = False     # single test of knapsack problem with random problem
-    single_test_dataset = True     # single test of knapsack problem from given dataset
+    single_test_dataset = False    # single test of knapsack problem from given dataset
     batch_test_random = False      # batch test of knapsack problem with random items and capacity
-    dataset_test = False           # test with the knapsack problem dataset
+    dataset_test = True           # test with the knapsack problem dataset
 
     # solve the knapsack problem using all algorithms
     if single_test_fixed:
