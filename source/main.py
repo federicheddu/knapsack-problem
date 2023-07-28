@@ -159,8 +159,11 @@ def vector_to_nx(items: List[Item], capacity: int, save_memory: bool = False):
         for nd in range(1, capacity+2):
             g.add_edge((len(items)-1)*(capacity+1)+nd, len(items)*(capacity+1)+1, weight=0, title='0')
 
-    else:
 
+    # save memory version
+    # WARNING: NOT WORKING
+    if save_memory:
+        # queue for creating nodes
         queue = []
         target = len(items)*(capacity+1)+1
         
@@ -178,18 +181,17 @@ def vector_to_nx(items: List[Item], capacity: int, save_memory: bool = False):
         queue.append(1)
         queue.append(items[0].weight+1)
 
-
         # until the queue is empty => until we have added all the necessary nodes => until we created the nodes of the last item
         while queue:
             node = queue.pop(0)
             item = g.nodes[node]['group']-1
 
-            # adding node and edge for the 'do not take' option
-            new_node = node+capacity+1
-            g.add_node(new_node, group=item+2, title=f'{new_node}', x=g.nodes[node]['x']+x_offset, y=g.nodes[node]['y'])
-            g.add_edge(node, new_node, weight=0, title='0')
             # if the node is not already in the queue and it is not corresponding to the last item
+            new_node = node+capacity+1
             if new_node not in queue and item+1 < len(items)-1:
+                # adding node and edge for the 'do not take' option
+                g.add_node(new_node, group=item+2, title=f'{new_node}', x=g.nodes[node]['x']+x_offset, y=g.nodes[node]['y'])
+                g.add_edge(node, new_node, weight=0, title='0')
                 queue.append(new_node)
             elif item+1 == len(items)-1:
                 g.add_edge(new_node, target, weight=0, title='0')
@@ -464,11 +466,11 @@ def full_dataset_test():
 if __name__ == '__main__':
 
     # Tests to do
-    single_test_fixed = False       # single test of knapsack problem with fixed problem
+    single_test_fixed = True       # single test of knapsack problem with fixed problem
     single_test_random = False     # single test of knapsack problem with random problem
     single_test_dataset = False    # single test of knapsack problem from given dataset
     batch_test_random = False      # batch test of knapsack problem with random items and capacity
-    dataset_test = True           # test with the knapsack problem dataset
+    dataset_test = False           # test with the knapsack problem dataset
 
     # solve the knapsack problem using all algorithms
     if single_test_fixed:
