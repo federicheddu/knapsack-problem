@@ -425,8 +425,11 @@ Inoltre, come ci aspettavamo, il tempo di esecuzione cresce all'aumentare del nu
 
 ### **Large scale dataset** 
 Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset reperibile al link [[download link](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/)], dove  vengono raggruppati varie dimensioni di problemi di kanpsack fino ad un massimo di 10000 elementi, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
-Rispetto alla tabella di sopra abbiamo compresso i risultati visto si tratta di una tabella molto lunga per poter avere una migliore visione generale.
-Quando l'ottimo risulta uguale alla funzione obiettivo ma viene detto che la selezione ottima è falsa è perché sebbene sia stato ottenuto lo stesso risultato del datatset è stato raggiunto in modo diverso (una selezione differente di oggetti). 
+
+Rispetto alla tabella di sopra abbiamo compresso i risultati visto si tratta di una tabella molto lunga per poter avere una migliore visione generale.<br>
+Quando l'ottimo risulta uguale alla funzione obiettivo ma viene detto che la selezione ottima è falsa è perché sebbene sia stato ottenuto lo stesso risultato del datatset è stato raggiunto in modo diverso (una selezione differente di oggetti), il motivo verrà spiegato più avanti. 
+
+Il dataset per ogni gruppo di numero di elementi (100, 200, 500, etc.) ha tre esempi numerati da uno a tre, i quali sono differenziati per la correlazione tra i suoi oggetti: 1 i dati non sono correlati, 2 i dati sono debolmente correlati e infine 3 i dati sono fortemente correlati. Siccome i nostri metodi di risoluzione non fanno uso della correlazione li abbiamo trattati tutti allo stesso modo, anche se questo comporta che nei casi fortemente correlati la soluzione trovata dal dataset sia diversa da quella raggiunta dai nostri metodi (anche se nella maggior parte dei casi con lo stesso valore) poiché quella soluzione tiene conto della suddetta correlazione.
 <br>
 <br>
 
