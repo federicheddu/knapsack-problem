@@ -423,8 +423,8 @@ Inoltre, come ci aspettavamo, il tempo di esecuzione cresce all'aumentare del nu
 
 <br>
 
-### **Large scale dataset**
-Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset reperibile al link [[link]([https://www.ibm.com/it-it/products/ilog-cplex-optimization-studio](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/))], dove  vengono raggruppati varie dimensioni di problemi di kanpsack fino ad un massimo di 10000 elementi, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
+### **Large scale dataset** 
+Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset reperibile al link [[download link](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/)], dove  vengono raggruppati varie dimensioni di problemi di kanpsack fino ad un massimo di 10000 elementi, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
 Rispetto alla tabella di sopra abbiamo compresso i risultati visto si tratta di una tabella molto lunga per poter avere una migliore visione generale.
 Quando l'ottimo risulta uguale alla funzione obiettivo ma viene detto che la selezione ottima è falsa è perché sebbene sia stato ottenuto lo stesso risultato del datatset è stato raggiunto in modo diverso (una selezione differente di oggetti). 
 <br>
