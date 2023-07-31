@@ -34,14 +34,18 @@ REPOSITORY STRUCTURE
 ·
 │
 │ FOLDERS
-├── source      //codice sorgente
-│   └── main.py
+├── source                      //codice sorgente
+│   ├── main.py
+│   ├── large_scale             //dataset dell'University of Cauca 
+│   │   └── ...
+│   └── large_scale-optimum     //soluzioni ai KP del dataset
+│       └── ...
 |
-├── images      //images for the readme
+├── images                      //imagini per il readme.md
 │   └── ...
 │
 │ FILES
-├── README.md   //relazione e documentazione
+├── README.md                   //relazione e documentazione
 └── .gitignore
 ```
 
