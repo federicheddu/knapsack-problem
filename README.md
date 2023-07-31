@@ -424,17 +424,26 @@ Inoltre, come ci aspettavamo, il tempo di esecuzione cresce all'aumentare del nu
 <br>
 
 ### **Large scale dataset** 
-Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset reperibile al link [[download link](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/)], dove  vengono raggruppati varie dimensioni di problemi di kanpsack fino ad un massimo di 10000 elementi, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
+Per fare i test con un maggior numero di elementi abbiamo utilizzato i dataset messi a disposizione dall'University of Cauca [[link](http://artemisa.unicauca.edu.co/~johnyortega/instances_01_KP/)], dove troviamo KPs di dimensioni da un minimo di 100 elementi ad un massimo di 10000, mettendo a disposizione anche una soluzione ottenuta tramite il metodo di ottimizzazione di David Pisinger.
 
-Rispetto alla tabella di sopra abbiamo compresso i risultati visto si tratta di una tabella molto lunga per poter avere una migliore visione generale.<br>
-Quando l'ottimo risulta uguale alla funzione obiettivo ma viene detto che la selezione ottima è falsa è perché sebbene sia stato ottenuto lo stesso risultato del datatset è stato raggiunto in modo diverso (una selezione differente di oggetti), il motivo verrà spiegato più avanti. 
+> [!IMPORTANT]
+> I Knapsack Problem con una dimensione superiore ai 1000 elementi richiedono la versione completa di CPLEX per l'eseguimento del metodo Branch & Bound (*che altrimenti andrebbe commentato*), in quanto si va a superare il limite delle 1000 variabili in caso di utilizzo della verione comunity versione comunity.
 
-Il dataset per ogni gruppo di numero di elementi (100, 200, 500, etc.) ha tre esempi numerati da uno a tre, i quali sono differenziati per la correlazione tra i suoi oggetti: 1 i dati non sono correlati, 2 i dati sono debolmente correlati e infine 3 i dati sono fortemente correlati. Siccome i nostri metodi di risoluzione non fanno uso della correlazione li abbiamo trattati tutti allo stesso modo, anche se questo comporta che nei casi fortemente correlati la soluzione trovata dal dataset sia diversa da quella raggiunta dai nostri metodi (anche se nella maggior parte dei casi con lo stesso valore) poiché quella soluzione tiene conto della suddetta correlazione.
+I risultati sono riportati in forma più concisa visto la grandezza di ogni problema. Per ogni KP troviamo il valore ottimo della funzione obiettivo riportato come soluzione al problema, inoltre nell'ultima colonna troviamo un valore `true/false` denominato *Optimum selection* se gli oggetti da noi selezionati sono gli stessi riportati nelle soluzioni fornite insieme al dataset. 
+
+Il dataset fornisce tre KP per ogni numero di elementi (100, 200, 500, etc.), i quali sono differenziati per la correlazione tra i suoi oggetti:  
+- **1:** i dati non sono correlati
+- **2:** i dati sono debolmente correlati
+- **3:** i dati sono fortemente correlati
+
+Siccome i nostri metodi di risoluzione non fanno uso della correlazione, abbiamo trattato tutti i problemi allo stesso modo. Questo comporta che nei casi fortemente correlati gli oggetti selezionati forniti come soluzione dal dataset differiscano da quelli selezionati nei nostri test, nonostante (tranne in un caso) la funzione obiettivo raggiunta sia quella ottima.
 <br>
 <br>
 
+<details>
+<summary><b>KP size: 100</b></summary>
 
-Solve the problem ./large_scale/100/knapPI_1_100_1000_1 with all algorithms - Optimum = 9147
+`./large_scale/100/knapPI_1_100_1000_1` - Optimum = 9147
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 9147               | 10                 | 0.05040597915649414  | True              |
@@ -442,7 +451,7 @@ Solve the problem ./large_scale/100/knapPI_1_100_1000_1 with all algorithms - Op
 | SP        | 9147               | 10                 | 0.4848489761352539   | True              |
  
 
-Solve the problem ./large_scale/100/knapPI_2_100_1000_1 with all algorithms - Optimum = 1514
+`./large_scale/100/knapPI_2_100_1000_1` - Optimum = 1514
 | Algorithm | Objective Function | Remaining Capacity | Time                  | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-------------------: | :---------------: |
 | BB        | 1514               | 4                  | 0.04498100280761719   | True              |
@@ -450,15 +459,19 @@ Solve the problem ./large_scale/100/knapPI_2_100_1000_1 with all algorithms - Op
 | SP        | 1514               | 4                  | 0.47075700759887695   | True              |
   
 
-Solve the problem ./large_scale/100/knapPI_3_100_1000_1 with all algorithms - Optimum = 2397
+`./large_scale/100/knapPI_3_100_1000_1` - Optimum = 2397
 | Algorithm | Objective Function | Remaining Capacity | Time                  | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-------------------: | :---------------: |
 | BB        | 2397               | 0                  | 0.02589106559753418   | True              |
 | PD        | 2397               | 0                  | 0.02137589454650879   | True              |
 | SP        | 2397               | 0                  | 0.45787501335144043   | True              |
 
+</details>
 
-Solve the problem ./large_scale/200/knapPI_1_200_1000_1 with all algorithms - Optimum = 11238
+<details>
+<summary><b>KP size: 200</b></summary>
+
+`./large_scale/200/knapPI_1_200_1000_1` - Optimum = 11238
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 11238              | 21                 | 0.02306818962097168  | True              |
@@ -466,7 +479,7 @@ Solve the problem ./large_scale/200/knapPI_1_200_1000_1 with all algorithms - Op
 | SP        | 11238              | 21                 | 1.0169668197631836   | True              |
 
 
-Solve the problem ./large_scale/200/knapPI_2_200_1000_1 with all algorithms - Optimum = 1634
+`./large_scale/200/knapPI_2_200_1000_1` - Optimum = 1634
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 1634               | 2                  | 0.027409076690673828 | True              |
@@ -474,15 +487,19 @@ Solve the problem ./large_scale/200/knapPI_2_200_1000_1 with all algorithms - Op
 | SP        | 1634               | 2                  | 1.0202839374542236   | True              |
 
 
-Solve the problem ./large_scale/200/knapPI_3_200_1000_1 with all algorithms - Optimum = 2697
+`./large_scale/200/knapPI_3_200_1000_1 with all algorithms` - Optimum = 2697
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 2697               | 142                | 0.04794812202453613  | False             |
 | PD        | 2697               | 0                  | 0.04271888732910156  | False             |
 | SP        | 2697               | 0                  | 0.9851489067077637   | False             |
 
+</details>
 
-Solve the problem ./large_scale/500/knapPI_1_500_1000_1 with all algorithms - Optimum = 28857
+<details>
+<summary><b>KP size: 500</b></summary>
+
+`./large_scale/500/knapPI_1_500_1000_1 with all algorithms` - Optimum = 28857
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 28857              | 0                  | 0.04396796226501465 | True              |
@@ -490,7 +507,7 @@ Solve the problem ./large_scale/500/knapPI_1_500_1000_1 with all algorithms - Op
 | SP        | 28857              | 0                  | 10.37842607498169   | True              |
 
 
-Solve the problem ./large_scale/500/knapPI_2_500_1000_1 with all algorithms - Optimum = 4566
+`./large_scale/500/knapPI_2_500_1000_1` - Optimum = 4566
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 4566               | 0                  | 0.07673215866088867  | True              |
@@ -498,15 +515,19 @@ Solve the problem ./large_scale/500/knapPI_2_500_1000_1 with all algorithms - Op
 | SP        | 4566               | 0                  | 10.822341203689575   | True              |
 
 
-Solve the problem ./large_scale/500/knapPI_3_500_1000_1 with all algorithms - Optimum = 7117
+`./large_scale/500/knapPI_3_500_1000_1` - Optimum = 7117
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 7117               | 0                  | 0.03749680519104004 | False             |
 | PD        | 7117               | 0                  | 0.5556941032409668  | False             |
 | SP        | 7117               | 0                  | 9.676017045974731   | False             |
 
+</details>
 
-Solve the problem ./large_scale/1000/knapPI_1_1000_1000_1 with all algorithms - Optimum = 54503
+<details>
+<summary><b>KP size: 1000</b></summary>
+
+`./large_scale/1000/knapPI_1_1000_1000_1` - Optimum = 54503
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 54503              | 0                  | 0.08110737800598145 | True              |
@@ -514,7 +535,7 @@ Solve the problem ./large_scale/1000/knapPI_1_1000_1000_1 with all algorithms - 
 | SP        | 54503              | 0                  | 43.0354118347168    | True              |
 
 
-Solve the problem ./large_scale/1000/knapPI_2_1000_1000_1 with all algorithms - Optimum = 9052
+`./large_scale/1000/knapPI_2_1000_1000_1` - Optimum = 9052
 | Algorithm | Objective Function | Remaining Capacity | Time                 | Optimum selection |
 | :-------: | :----------------: | :----------------: | :------------------: | :---------------: |
 | BB        | 9052               | 0                  | 0.04241800308227539  | True              |
@@ -522,15 +543,19 @@ Solve the problem ./large_scale/1000/knapPI_2_1000_1000_1 with all algorithms - 
 | SP        | 9052               | 0                  | 41.560293197631836   | True              |
 
 
-Solve the problem ./large_scale/1000/knapPI_3_1000_1000_1 with all algorithms - Optimum = 14390
+`./large_scale/1000/knapPI_3_1000_1000_1` - Optimum = 14390
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 14390              | 0                  | 0.03505206108093262 | False             |
 | PD        | 14390              | 0                  | 1.6742091178894043  | False             |
 | SP        | 14390              | 0                  | 42.39018797874451   | False             |
 
+</details>
 
-Solve the problem ./large_scale/2000/knapPI_1_2000_1000_1 with all algorithms - Optimum = 110625
+<details>
+<summary><b>KP size: 2000</b></summary>
+
+`./large_scale/2000/knapPI_1_2000_1000_1` - Optimum = 110625
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 110625             | 0                  | 0.1080384254455566  | True              |
@@ -538,7 +563,7 @@ Solve the problem ./large_scale/2000/knapPI_1_2000_1000_1 with all algorithms - 
 | SP        | 110625             | 0                  | 310.9519999027252   | True              |
 
 
-Solve the problem ./large_scale/2000/knapPI_2_2000_1000_1 with all algorithms - Optimum = 18051
+`./large_scale/2000/knapPI_2_2000_1000_1` - Optimum = 18051
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |  
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 18051              | 1                  | 0.0840764045715332  | True              |
@@ -546,26 +571,35 @@ Solve the problem ./large_scale/2000/knapPI_2_2000_1000_1 with all algorithms - 
 | SP        | 18051              | 1                  | 352.5785958766937   | True              |
 
 
-Solve the problem ./large_scale/2000/knapPI_3_2000_1000_1 with all algorithms - Optimum = 28919   
+`./large_scale/2000/knapPI_3_2000_1000_1` - Optimum = 28919   
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 28919              | 0                  | 0.11137914657592773 | False             |
 | PD        | 28919              | 0                  | 10.89016318321228   | False             |
 | SP        | 28919              | 0                  | 269.2644245624542   | False             |
 
+</details>
 
-Solve the problem ./large_scale/10000/knapPI_1_10000_1000_1 with all algorithms - Optimum = 110625    
+<details>
+<summary><b>KP size: 10000</b></summary>
+    
+`./large_scale/10000/knapPI_1_10000_1000_1` - Optimum = 563647    
 | Algorithm | Objective Function | Remaining Capacity | Time                | Optimum selection |
 | :-------: | :----------------: | :----------------: | :-----------------: | :---------------: |
 | BB        | 563634             | 1                  | 0.192460298538208   | False             |
 | PD        | 563647             | 0                  | 282.13068103790283  | True              |
 | SP        | X                  | X                  | X                   | X                 |
 
+</details>
+
 <br>
 
-Abbiamo provato ad eseguire i test con il set da 10000 ma il metodo di risoluzione dello shortest path richiede cosi tante risorse che il computer su cui abbiamo eseguito i test ha terminato la memoria lasciandoci solo dei risultati parziali; i test con il maggior numero di elementi che siami riusciti a terminare sono stati quelli con 2000 elementi (ATTENZIONE: richiede comunque la versione completa di CPLEX in quanto supera il limite delle 1000 variabili della versione comunity).
+I test sono stati eseguiti senza problemi fino ad una grandezza del problema di 2000 elemnti, mentre i test con grandezza pari a 10000 elementi ci hanno portato ad avere dei risultati parziali, in quanto il metodo di risoluzione Shortest Path ha un demando computazionale troppo elevato in termini di memoria.
 
-Tanto più il numero di elementi aumenta tanto più aumenta il divario tra i metodi più efficaci rispetto a quelli meno efficaci: CPLEX con il Branch and bound è cosi rapido da non raggiunge mai il secondo a prescindere da quanti elementi utilizzi rendendolo il più rapido in assoluto, poi abbiamo la Programmazione dinamica che sebbene abbia avuto un tempo assai maggiore rispetto ad BB è stato l'unico (nel test con 10000 elementi) ad avere lo stesso risultato del datataset (nonché il più alto), infine abbiamo lo Shortest path, il quale anche dopo la rimozione della realizzazione grafica del grafo (la quale appesantiva tremendamente il processo) ha avuto sempre prestazioni inferiori fino a rendere impossibile la sua terminazione nei casi più complessi.
+In conclusione, possiamo notare che tanto più il numero di elementi aumenta, tanto più aumenta il divario tra i metodi più efficienti rispetto a quelli meno efficienti: CPLEX con il Branch & Bound è cosi rapido da non raggiunge mai il secondo a prescindere da quanti elementi si utilizzino, rendendolo il più rapido in assoluto. Abbiamo poi la Programmazione Dinamica che, sebbene abbia avuto un tempo assai maggiore rispetto ad BB, è stato l'unico nel test con 10000 elementi ad avere lo stesso risultato del datataset. Per ultimo abbiamo lo Shortest Path, il quale ha avuto sempre prestazioni inferiori fino a rendere impossibile la sua terminazione nei casi più complessi.
+
+Da notare il fatto che il Branch & Bound, nell'unico test effettuato con 10000 elementi, non riesca a trovare una delle possibili soluzioni ottime, ottendo un valore della funzione obiettivo più basso di 13.
+
 <br>
 <br>
 
